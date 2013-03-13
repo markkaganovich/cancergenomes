@@ -39,9 +39,10 @@ metadata.create_all(db)
 
 def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf'):
 	f = open(filename)
-	version = f.next()
-	description = f.next()
-	header = f.next().split('\t')
+	for h in f:
+		if not h.startswith('#'):
+			header = h.split('\t')
+			break
 	print header
 
 	for l in f:
