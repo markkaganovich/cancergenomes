@@ -38,22 +38,20 @@ metadata.create_all(db)
 
 #build db from maf files
 
+def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf'):
+	f = open(filename)
+	version = f.next()
+	description = f.next()
+	header = f.next().split('\t')
+	print header
 
-f = open('ov_liftover.aggregated.capture.tcga.uuid.somatic.maf')
-version = f.next()
-description = f.next()
-header = f.next().split('\t')
-print header
-
-
-
-for l in f:
-	l = l.split('\t')
-	inputdic = {}
-	for c in mutations.c:
-		if c.name in header:
-			inputdic.update({c.name: l[header.index(c.name)]})
-	i = mutations.insert()
-	i.execute(inputdic)
+	for l in f:
+		l = l.split('\t')
+		inputdic = {}
+		for c in mutations.c:
+			if c.name in header:
+				inputdic.update({c.name: l[header.index(c.name)]})
+		i = mutations.insert()
+		i.execute(inputdic)
 
 
