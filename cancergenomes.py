@@ -31,7 +31,6 @@ mutations = Table('mutations', metadata,
 	Column('Validation_Status', String),
 	Column('Mutation_Status', String),
 	Column('Sequencer', String),
-	autoload = True
 	)
 
 metadata.create_all(db)
