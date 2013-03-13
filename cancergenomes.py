@@ -5,7 +5,7 @@ db.echo = True
 
 metadata = MetaData(db)
 
-mutations = Table('mutations', metadata,
+mutations = Table('mutations', metadata, 
 	Column('file', String),
 	Column('cancer', String),
 	Column('Hugo_Symbol', String),
@@ -30,13 +30,30 @@ mutations = Table('mutations', metadata,
 	Column('Matched_Norm_Validation_Allele2', String),
 	Column('Validation_Status', String),
 	Column('Mutation_Status', String),
-	Column('Sequencer', String)
-
-
-
-
-
-
+	Column('Sequencer', String),
+	autoload = True
 	)
 
-mutations.create()
+metadata.create_all(db)
+
+#build db from maf files
+
+
+f = open('ov_liftover.aggregated.capture.tcga.uuid.somatic.maf')
+version = f.next()
+description = f.next()
+header = f.next().split('\t')
+print header
+
+
+
+for l in f:
+	l = l.split('\t')
+	inputdic = {}
+	for c in mutations.c:
+		if c.name in header:
+			inputdic.update({c.name: l[header.index(c.name)]})
+	i = mutations.insert()
+	i.execute(inputdic)
+
+
