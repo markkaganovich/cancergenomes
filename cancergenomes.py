@@ -37,7 +37,7 @@ metadata.create_all(db)
 
 #build db from maf files
 
-def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf'):
+def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf', cancer = 'None'):
 	f = open(filename)
 	for h in f:
 		if not h.startswith('#'):
@@ -51,6 +51,7 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 		for c in mutations.c:
 			if c.name in header:
 				inputdic.update({c.name: l[header.index(c.name)]})
+		inputdic.update({'cancer' : cancer})
 		i = mutations.insert()
 		i.execute(inputdic)
 
