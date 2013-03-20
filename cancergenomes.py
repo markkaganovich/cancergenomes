@@ -44,6 +44,7 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 	for h in f:
 		if not h.startswith('#'):
 			header = h.split('\t')
+			header = map(lambda x: x.lower(), header)
 			break
 	print header
 
@@ -51,8 +52,10 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 		l = l.split('\t')
 		inputdic = {}
 		for c in mutations.c:
-			if c.name in header:
-				inputdic.update({c.name: l[header.index(c.name)]})
+			if c.name.lower() in header:
+				inputdic.update({c.name: l[header.index(c.name.lower())]})
+			elif c.name in synonyms.keys():
+				inputdic.update({c.name: l[header.index(synonyms[c.name].lower())]})
 		inputdic.update({'cancer' : cancer})
 		i = mutations.insert()
 		i.execute(inputdic)
