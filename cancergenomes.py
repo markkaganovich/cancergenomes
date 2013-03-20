@@ -35,6 +35,8 @@ mutations = Table('mutations', metadata,
 
 metadata.create_all(db)
 
+synonyms = {'Chromosome': 'Chrom'}
+
 #build db from maf files
 
 def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf', cancer = 'None'):
