@@ -61,3 +61,12 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 		i.execute(inputdic)
 
 
+if __name__ == "__main__":
+	
+	args = sys.argv[1:]
+	print args 
+	if '-insert' in args:
+		f = args[1]
+		cancertype = args[2]
+		insert_from_file(filename = f, cancer = cancertype)
+
