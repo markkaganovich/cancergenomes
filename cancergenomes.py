@@ -71,7 +71,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 	chainfile = liftoverdir+chainfilename
 	bed18 = open('hg18.bed', 'w')
 	for a in all36:
-		bed18.write(str(a.Chromosome) + '\t' + str(a.Start_Position) + '\t' + str(a.End_Position) + '\n')
+		bed18.write('chr'+str(a.Chromosome) + '\t' + str(a.Start_Position) + '\t' + str(int(a.End_Position)+1) + '\n')
 	commands.getstatusoutput("%s hg18.bed %s hg19.bed unmapped" % (liftoverdir+'liftOver', chainfile))
 
 
