@@ -1,5 +1,7 @@
 from sqlalchemy import *
 import sys
+from sqlalchemy.orm import sessionmaker
+import commands
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = True
@@ -60,6 +62,21 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 		inputdic.update({'cancer' : cancer})
 		i = mutations.insert()
 		i.execute(inputdic)
+
+def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = 'hg18tohg19.over.chain'):
+	Session = sessionmaker(db)
+	session = Session()
+	all36 = session.query(mutations).filter_by(NCBI_Build = '36').all()
+
+	chainfile = liftoverdir+chainfilename
+	bed18 = open('hg18.bed', 'w')
+	for a in all36:
+		bed18.write(a.Chromosome + ':' + a.Start_Position + ':' a.End_Position + '\n')
+	commands.getstatusoutput("%s hg18.bed %s hg19.bed unmapped" % (liftoverdir+'liftOver', chainfile))
+
+	
+
+
 
 
 if __name__ == "__main__":
