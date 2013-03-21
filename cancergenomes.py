@@ -1,4 +1,5 @@
 from sqlalchemy import *
+import sys
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = True
