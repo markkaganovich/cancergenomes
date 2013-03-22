@@ -118,7 +118,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			continue
 	maf19temp.close()
 	'''
-	session.query(mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
+	#session.query(mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
 	maf19 = open('maf19temp').readlines()
 	for line in maf19[1:]:
 		inputdic = {}
