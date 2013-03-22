@@ -2,11 +2,15 @@ from sqlalchemy import *
 import sys
 from sqlalchemy.orm import sessionmaker
 import commands
+import os
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = True
 
 metadata = MetaData(db)
+
+Session = sessionmaker(db)
+session = Session()
 
 mutations = Table('mutations', metadata, 
 	Column('file', String),
@@ -82,6 +86,8 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			unmapped.append(snppos)
 	
 	hg19 = open('hg19.bed')
+	maf19temp = open('maf19temp', 'w')
+	keys = all36[0].keys()
 	for a in all36:
 		snppos = 'chr' + str(a.Chromosome) + ':' + str(a.Start_Position)
 		if snppos not in unmapped:
@@ -89,13 +95,25 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			newchrom = l.split('\t')[0].split('chr')[1]
 			newstart = l.split('\t')[1]
 			newend = str(int(newstart) + 1)
-			newa = session.query(mutations).filter_by(Tumor_Sample_Barcode = a.Tumor_Sample_Barcode, Start_Position = a.Start_Position)
-			newa.update({"Chromosome": newchrom, "Start_Position": newstart, "End_Position": newend, "NCBI_Build" : 37}, synchronize_session=False)
+			a.Chromosome = newchrom
+			a.Start_Position = newstart
+			a.End_Position = newend
+			newline = ''
+			for k in keys:
+				newline = newline + a.k + '\t'
+			maf19temp.write(newline.strip('\t') + '\n')
+
+			#newa = session.query(mutations).filter_by(Tumor_Sample_Barcode = a.Tumor_Sample_Barcode, Start_Position = a.Start_Position)
+			#newa.update({"Chromosome": newchrom, "Start_Position": newstart, "End_Position": newend, "NCBI_Build" : 37}, synchronize_session=False)
 		else:
 			print snppos
 			continue
 
 
+def bed_to_mafstyle():
+	'''
+	convert bed file to something like a maf file, basically write the db to a file, then read it back
+	'''
 
 
 
