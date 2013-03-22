@@ -91,7 +91,6 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 	for k in keys:
 		maf19temp.write(k + '\t')
 	maf19temp.write('\n')	
-	maf19temp.close()
 
 	for a in all36:
 		snppos = 'chr' + str(a.Chromosome) + ':' + str(a.Start_Position)
@@ -116,6 +115,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 		else:
 			print snppos
 			continue
+	maf19temp.close()
 
 	all36.delete(synchronize_session=False)
 	maf19 = open('maf19temp').readlines()
