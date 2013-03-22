@@ -88,10 +88,17 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 	hg19 = open('hg19.bed')
 	maf19temp = open('maf19temp', 'w')
 	keys = all36[0].keys()
+	for k in keys:
+		maf19temp.write(k + '\t')
+	maf19temp.write('\n')
+
 	for a in all36:
 		snppos = 'chr' + str(a.Chromosome) + ':' + str(a.Start_Position)
 		if snppos not in unmapped:
-			l = hg19.next()
+			try:
+				l = hg19.next()
+			except StopIteration:
+				break
 			newchrom = l.split('\t')[0].split('chr')[1]
 			newstart = l.split('\t')[1]
 			newend = str(int(newstart) + 1)
