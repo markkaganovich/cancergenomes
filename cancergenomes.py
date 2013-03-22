@@ -74,6 +74,27 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 		bed18.write('chr'+str(a.Chromosome) + '\t' + str(a.Start_Position) + '\t' + str(int(a.End_Position)+1) + '\n')
 	commands.getstatusoutput("%s hg18.bed %s hg19.bed unmapped" % (liftoverdir+'liftOver', chainfile))
 
+	unmapped = []
+	lines = open('unmapped').readlines()
+	for l in lines:
+		if not l.startswith('#'):
+			snppos = l.split('\t')[0] + ':' + l.split('\t')[1]
+			unmapped.append(snppos)
+	
+	hg19 = open('hg19.bed')
+	for a in all36:
+		snppos = 'chr' + str(a.Chromosome) + ':' + str(a.Start_Position)
+		if snppos not in unmapped:
+			l = hg19.next()
+			newchrom = l.split('\t')[0].split('chr')[1]
+			newstart = l.split('\t')[1]
+			newend = str(int(newstart) + 1)
+			newa = session.query(mutations).filter_by(Tumor_Sample_Barcode = a.Tumor_Sample_Barcode, Start_Position = a.Start_Position)
+			newa.update({"Chromosome": newchrom, "Start_Position": newstart, "End_Position": newend, "NCBI_Build" : 37}, synchronize_session=False)
+		else:
+			print snppos
+			continue
+
 
 
 
