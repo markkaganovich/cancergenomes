@@ -122,9 +122,9 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 	maf19 = open('maf19temp').readlines()
 	for line in maf19[1:]:
 		inputdic = {}
-		for i,k in enumerate(keys):
+		for i,k in enumerate(mutations.c):
 			l = line.split('\t')
-			inputdic.update({k: l[i]})
+			inputdic.update({k.name: l[i]})
 		i = mutations.insert()
 		i.execute(inputdic)
 
