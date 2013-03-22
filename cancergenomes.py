@@ -100,7 +100,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			a.End_Position = newend
 			newline = ''
 			for k in keys:
-				newline = newline + a.k + '\t'
+				newline = newline + getattr(a, k) + '\t'
 			maf19temp.write(newline.strip('\t') + '\n')
 
 			#newa = session.query(mutations).filter_by(Tumor_Sample_Barcode = a.Tumor_Sample_Barcode, Start_Position = a.Start_Position)
