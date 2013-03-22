@@ -125,7 +125,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 		for i,k in enumerate(mutations.c):
 			l = line.split('\t')
 			inputdic.update({k.name: l[i]})
-		inputdic.update(NCBI_Build: '37')
+		inputdic.update({NCBI_Build: '37'})
 		i = mutations.insert()
 		i.execute(inputdic)
 
