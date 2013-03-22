@@ -3,6 +3,7 @@ import sys
 from sqlalchemy.orm import sessionmaker
 import commands
 import os
+from sqlalchemy.sql import and_, or_
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = True
@@ -43,6 +44,43 @@ mutations = Table('mutations', metadata,
 metadata.create_all(db)
 
 synonyms = {'Chromosome': 'Chrom'}
+
+
+def make_matrix():
+	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(mutations).filter(mutations.c.Variant_Classification != 'Silent').all())))
+	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, session.query(mutations).all())))
+
+	genotypes = {}
+	for s in samples:
+		rows = session.query(mutations).filter(or_(mutations.c.Tumor_Sample_Barcode == s, mutations.c.Variant_Classification != 'Silent')).all()
+		rowsnps = map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows)
+		snps = []
+		for s in allsnps:
+			if s in rowsnps:
+				snps.append(1)
+			else:
+				snps.append(0)
+		genotypes[s] = snps
+	
+	return genotypes
+
+
+
+
+def count(Query):
+	rows = Query.all()
+	print "here"
+	duplicateinds = []
+	for i in range(0, len(rows)):
+		l = range(0, len(rows))
+		l.remove(i)
+		newrows = map(lambda x: rows[x], l)
+		if rows[i] in newrows:
+			duplicateinds.append(i)
+	num = len(rows) - len(duplicateinds)/2
+	return num
+
+
 
 #build db from maf files
 
@@ -128,17 +166,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 		inputdic.update({'NCBI_Build': '37'})
 		i = mutations.insert()
 		i.execute(inputdic)
-
-
-
-
-
-
-
-def bed_to_mafstyle():
-	'''
-	convert bed file to something like a maf file, basically write the db to a file, then read it back
-	'''
+ 
 
 
 
