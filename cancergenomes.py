@@ -46,23 +46,30 @@ metadata.create_all(db)
 synonyms = {'Chromosome': 'Chrom'}
 
 
-def make_matrix():
+def make_matrix(outputfile = 'genotype_matrix.temp'):
+	out = open(outputfile, 'w')
+
 	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(mutations).filter(mutations.c.Variant_Classification != 'Silent').all())))
 	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, session.query(mutations).all())))
 
+	line = 'SAMPLE,'
+	for a in allsnps:
+		line = line + a + ','
+	out.write(line.strip(',')+'\n')
+
 	genotypes = {}
 	for s in samples:
-		rows = session.query(mutations).filter(or_(mutations.c.Tumor_Sample_Barcode == s, mutations.c.Variant_Classification != 'Silent')).all()
+		out.write(s + ',')
+		rows = session.query(mutations).filter(and_(mutations.c.Tumor_Sample_Barcode == s, mutations.c.Variant_Classification != 'Silent')).all()
 		rowsnps = map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows)
-		snps = []
-		for s in allsnps:
-			if s in rowsnps:
-				snps.append(1)
+		snps = ''
+		for snp in allsnps:
+			if snp in rowsnps:
+				snps = snps + '1' + ','
 			else:
-				snps.append(0)
-		genotypes[s] = snps
-	
-	return genotypes
+				snps = snps + '0' + ','
+		out.write(snps.strip(',')+'\n')
+
 
 
 
@@ -71,7 +78,7 @@ def count(Query):
 	rows = Query.all()
 	print "here"
 	duplicateinds = []
-	for i in range(0, len(rows)):
+	for i in range(0, len(rows)):	
 		l = range(0, len(rows))
 		l.remove(i)
 		newrows = map(lambda x: rows[x], l)
