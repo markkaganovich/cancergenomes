@@ -1,9 +1,10 @@
 from sqlalchemy import *
-import sys
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import and_, or_
+import sys
+import json
 import commands
 import os
-from sqlalchemy.sql import and_, or_
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = True
@@ -70,6 +71,44 @@ def make_matrix(outputfile = 'genotype_matrix.temp'):
 				snps = snps + '0' + ','
 		out.write(snps.strip(',')+'\n')
 
+def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
+	'''
+	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
+	'''
+	genotype_matrix = open(genotype_matrix_file).readlines()
+	snps = genotype_matrix[0].strip('\n').split(',')[1:]
+	snpco = {}
+	for s in snps:
+		snpco[s] = {}
+
+	#initialize k=1 iteration	
+	g = genotype_matrix[1]
+	l = g.strip('\n').split(',')[1:]
+	for i in range(0, len(l)):
+		for j in range(0, len(l)):
+			snpco[snps[i]][snps[j]] = int(l[i]) * int(l[j])
+
+	for g in genotype_matrix[2:]:
+		l = g.strip('\n').split(',')[1:]
+		for i in range(0, len(l)):
+			for j in range(0, len(l)):
+				snpco[snps[i]][snps[j]] = snpco[snps[i]][snps[j]] + (int(l[i]) * int(l[j]))
+
+ 	out = open('snpco', 'w')
+ 	line = 'SNPs,'
+ 	for i in snps:
+ 		line = line + i + ','
+ 	out.write(line.strip(',') + '\n')
+
+ 	for i in snps:
+ 		out.write(i + ',')
+ 		line = ''
+ 		for j in snps:
+ 			line = line + str(snpco[i][j]) + ','
+ 		out.write(line.strip(',') + '\n')
+
+	return snpco
+
 
 
 
@@ -115,7 +154,7 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = 'hg18tohg19.over.chain'):
 	Session = sessionmaker(db)
 	session = Session()
-	'''
+	
 	all36 = session.query(mutations).filter_by(NCBI_Build = '36').all()
 
 	chainfile = liftoverdir+chainfilename
@@ -162,8 +201,8 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			print snppos
 			continue
 	maf19temp.close()
-	'''
-	#session.query(mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
+	
+	session.query(mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
 	maf19 = open('maf19temp').readlines()
 	for line in maf19[1:]:
 		inputdic = {}
