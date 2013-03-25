@@ -6,7 +6,7 @@ import json
 import commands
 import os
 
-db = create_engine('sqlite:///tcga.db')
+db = create_engine('sqlite:///tcga_copy.db')
 db.echo = True
 
 metadata = MetaData(db)
