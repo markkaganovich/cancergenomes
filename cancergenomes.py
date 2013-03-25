@@ -14,7 +14,7 @@ metadata = MetaData(db)
 Session = sessionmaker(db)
 session = Session()
 
-mutations = Table('mutations', metadata, 
+Mutations = Table('Mutations', metadata, 
 	Column('file', String),
 	Column('cancer', String),
 	Column('Hugo_Symbol', String),
@@ -42,16 +42,22 @@ mutations = Table('mutations', metadata,
 	Column('Sequencer', String),
 	)
 
-metadata.create_all(db)
 
 synonyms = {'Chromosome': 'Chrom'}
 
+Snps = Table('Snps', metadata,
+	Column('chomosome', String),
+	Column('position', String),
+	Column('gene', String),
+	)
+
+metadata.create_all(db)
 
 def make_matrix(outputfile = 'genotype_matrix.temp'):
 	out = open(outputfile, 'w')
 
-	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(mutations).filter(mutations.c.Variant_Classification != 'Silent').all())))
-	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, session.query(mutations).all())))
+	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(Mutations).filter(Mutations.c.Variant_Classification != 'Silent').all())))
+	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, session.query(Mutations).all())))
 
 	line = 'SAMPLE,'
 	for a in allsnps:
@@ -61,7 +67,7 @@ def make_matrix(outputfile = 'genotype_matrix.temp'):
 	genotypes = {}
 	for s in samples:
 		out.write(s + ',')
-		rows = session.query(mutations).filter(and_(mutations.c.Tumor_Sample_Barcode == s, mutations.c.Variant_Classification != 'Silent')).all()
+		rows = session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()
 		rowsnps = map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows)
 		snps = ''
 		for snp in allsnps:
@@ -88,6 +94,7 @@ def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
 		for j in range(0, len(l)):
 			snpco[snps[i]][snps[j]] = int(l[i]) * int(l[j])
 
+	#continue for rest of the snp lines
 	for g in genotype_matrix[2:]:
 		l = g.strip('\n').split(',')[1:]
 		for i in range(0, len(l)):
@@ -127,9 +134,21 @@ def count(Query):
 	return num
 
 
+def make_snptogenetable(genotable = Mutations):
+	'''
+	take table from tcga maf files, and make a new table of just snp to gene relationships
+
+	'''
+	snps = session.query(Mutations).all()
+	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(Mutations).all())))
+	for s in allsnps:
+		chrom = s.split(':')[0]
+		pos = s.split(':')[1]
+		inputdic = {'chromosome' : chrom, 'position' : pos, 'gene' : session.query(Mutations).filter(and_(Mutations.c.Chromosome == chrom, Mutations.c.Start_Position == pos)).first().Hugo_Symbol}
+
+
 
 #build db from maf files
-
 def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somatic.maf', cancer = 'None'):
 	f = open(filename)
 	for h in f:
@@ -142,20 +161,20 @@ def insert_from_file(filename = 'ov_liftover.aggregated.capture.tcga.uuid.somati
 	for l in f:
 		l = l.split('\t')
 		inputdic = {}
-		for c in mutations.c:
+		for c in Mutations.c:
 			if c.name.lower() in header:
 				inputdic.update({c.name: l[header.index(c.name.lower())]})
 			elif c.name in synonyms.keys():
 				inputdic.update({c.name: l[header.index(synonyms[c.name].lower())]})
 		inputdic.update({'cancer' : cancer})
-		i = mutations.insert()
+		i = Mutations.insert()
 		i.execute(inputdic)
 
 def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = 'hg18tohg19.over.chain'):
 	Session = sessionmaker(db)
 	session = Session()
 	
-	all36 = session.query(mutations).filter_by(NCBI_Build = '36').all()
+	all36 = session.query(Mutations).filter_by(NCBI_Build = '36').all()
 
 	chainfile = liftoverdir+chainfilename
 	bed18 = open('hg18.bed', 'w')
@@ -202,16 +221,20 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			continue
 	maf19temp.close()
 	
-	session.query(mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
+	session.query(Mutations).filter_by(NCBI_Build = '36').delete(synchronize_session=False)
+	session.commit()
 	maf19 = open('maf19temp').readlines()
 	for line in maf19[1:]:
 		inputdic = {}
-		for i,k in enumerate(mutations.c):
+		for i,k in enumerate(Mutations.c):
 			l = line.split('\t')
-			inputdic.update({k.name: l[i]})
-		inputdic.update({'NCBI_Build': '37'})
-		i = mutations.insert()
-		i.execute(inputdic)
+			try:
+				inputdic.update({k.name: l[i]})
+				inputdic.update({'NCBI_Build': '37'})
+				i = Mutations.insert()
+				i.execute(inputdic)
+			except IndexError:
+				continue
  
 
 
