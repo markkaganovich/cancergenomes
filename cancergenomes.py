@@ -139,12 +139,13 @@ def make_snptogenetable(genotable = Mutations):
 	take table from tcga maf files, and make a new table of just snp to gene relationships
 
 	'''
-	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(Mutations).all())))
-	for s in allsnps:
-		inputdic = {}
-		chrom = s.split(':')[0]
-		pos = s.split(':')[1]
-		inputdic = {'chromosome' : chrom, 'position' : pos, 'gene' : session.query(Mutations).filter(and_(Mutations.c.Chromosome == chrom, Mutations.c.Start_Position == pos)).first().Hugo_Symbol}
+	a = session.query(Mutations).all()
+	snp_gene= list(set(map(lambda x: (str(x.Chromosome) + ':' + str(x.Start_Position), x.Hugo_Symbol), a)))
+	snp_dict = dict(snp_gene)
+	for k in snp_dict.keys():
+		chrom = k.split(':')[0]
+		pos = k.split(':')[1]
+		inputdic = {'chromosome' : chrom, 'position' : pos, 'gene' : snp_dict[k]}
 		i =Snps.insert()
 		i.execute(inputdic)
 
