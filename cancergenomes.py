@@ -6,7 +6,7 @@ import json
 import commands
 import os
 
-db = create_engine('sqlite:///tcga_copy.db')
+db = create_engine('sqlite:///tcga.db')
 db.echo = True
 
 metadata = MetaData(db)
@@ -141,6 +141,7 @@ def make_snptogenetable(genotable = Mutations):
 	'''
 	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), session.query(Mutations).all())))
 	for s in allsnps:
+		inputdic = {}
 		chrom = s.split(':')[0]
 		pos = s.split(':')[1]
 		inputdic = {'chromosome' : chrom, 'position' : pos, 'gene' : session.query(Mutations).filter(and_(Mutations.c.Chromosome == chrom, Mutations.c.Start_Position == pos)).first().Hugo_Symbol}
