@@ -144,7 +144,7 @@ def make_snptogenetable(genotable = Mutations):
 		chrom = s.split(':')[0]
 		pos = s.split(':')[1]
 		inputdic = {'chromosome' : chrom, 'position' : pos, 'gene' : session.query(Mutations).filter(and_(Mutations.c.Chromosome == chrom, Mutations.c.Start_Position == pos)).first().Hugo_Symbol}
-		i.Snps.insert()
+		i =Snps.insert()
 		i.execute(inputdic)
 
 
