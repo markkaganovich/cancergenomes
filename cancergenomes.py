@@ -46,7 +46,7 @@ Mutations = Table('Mutations', metadata,
 synonyms = {'Chromosome': 'Chrom'}
 
 Snps = Table('Snps', metadata,
-	Column('chomosome', String),
+	Column('chromosome', String),
 	Column('position', String),
 	Column('gene', String),
 	)
