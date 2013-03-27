@@ -7,7 +7,7 @@ import commands
 import os
 
 db = create_engine('sqlite:///tcga.db')
-db.echo = True
+db.echo = False
 
 metadata = MetaData(db)
 
@@ -124,6 +124,58 @@ def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
  		out.write(line.strip(',') + '\n')
 
 	return snpco
+
+
+def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp'):
+	'''
+	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
+	group snps by genes and calculate the gene-based co-occurrence
+	'''
+	genotype_matrix = open(genotype_matrix_file)
+	g = genotype_matrix.next()
+	snps = g.strip('\n').split(',')[1:]
+	snptogene = map(lambda x: session.query(Snps).filter(and_(Snps.c.chromosome == x.split(':')[0], Snps.c.position == x.split(':')[1])).first().gene, snps) 
+
+	#initialize gene by gene dictionary
+	geneco = {}
+	allgenes = list(set(map(lambda x: x.gene, session.query(Snps).all())))
+	for g in allgenes:
+		geneco[g] = {}
+
+	#initialize co_occur count: the phastniel algorithm
+	g = genotype_matrix.next()
+	l = g.strip('\n').split(',')[1:]
+	for i in range(0, len(l)):
+		genei = snptogene[i]
+		for j in range(0, len(l)):
+			genej = snptogene[j]
+			geneco[genei][genej] = int(l[i]) * int(l[j])
+
+	#continue for rest of snp lines
+	for g in genotype_matrix:
+		l = g.strip('\n').split(',')[1:]
+		for i in range(0, len(l)):
+			genei = snptogene[i]
+			for j in range(0, len(l)):
+				genej = snptogene[j]
+				geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
+
+	out = open('snpco', 'w')
+	line = 'GENES,'
+	genes = geneco.keys()
+	for gene in genes:
+		line = line+ gene + ','
+	out.write(line.strip(',') + '\n')
+
+
+
+	for i in genes:
+		line =''
+		for j in genes:
+			line = line + str(geneco[i][j]) + ','
+ 		out.write(line.strip(',') + '\n')
+
+ 	return geneco
 
 
 
