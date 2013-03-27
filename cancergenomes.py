@@ -53,33 +53,37 @@ Snps = Table('Snps', metadata,
 
 metadata.create_all(db)
 
-def make_matrix(outputfile = 'genotype_matrix.temp'):
+def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
 	out = open(outputfile, 'w')
+	snpcountout = open(snpcountfile, 'w')
 
-	#a = session.query(Mutations).filter(Mutations.c.Variant_Classification != 'Silent').all()
-	#allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
 	sam = session.query(Mutations).all()
 	a = list(set(filter(lambda x: x.Variant_Classification != 'Silent', sam)))
 	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
-	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, sam)))
+	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, a)))
 
 	line = 'SAMPLE,'
+	snpcount = {}
 	for a in allsnps:
 		line = line + a + ','
+		snpcount[snp] = 0
 	out.write(line.strip(',')+'\n')
 
 	for s in samples:
 		out.write(s + ',')
-		rows = filter(lambda x: x.Tumor_Sample_Barcode == s and x.Variant_Classification != 'Silent', sam)
-		#rows = session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()
+		rows = filter(lambda x: x.Tumor_Sample_Barcode == s, a)
 		rowsnps = set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows))
 		snps = ''
 		for snp in allsnps:
 			if snp in rowsnps:
 				snps = snps + '1' + ','
+				snpcount[snp] = snpcount[snp] + 1
 			else:
 				snps = snps + '0' + ','
+				snpcount[snp] = snpcount[snp] + 0
 		out.write(snps.strip(',')+'\n')
+	json.dump(snpcount, snpcountout)
+
 
 def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
 	'''
@@ -256,7 +260,7 @@ if __name__ == "__main__":
 		cancertype = args[2]
 		insert_from_file(filename = f, cancer = cancertype)
 	if '-make_matrix' in args:
-		make_matrix(args[1])
+		make_matrix(args[1], args[2])
 	if '-co_occurr' in args:
 		co_occurr(args[1])
 
