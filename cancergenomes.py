@@ -254,7 +254,7 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			except IndexError:
 				continue
  
- def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
+def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
 	'''
 	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
 	'''
