@@ -85,48 +85,7 @@ def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.te
 	json.dump(snpcount, snpcountout)
 
 
-def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
-	'''
-	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
-	'''
-	genotype_matrix = open(genotype_matrix_file)
-	g = genotype_matrix.next()
-	snps = g.strip('\n').split(',')[1:]
-	snpco = {}
-	for s in snps:
-		snpco[s] = {}
-
-	#initialize k=1 iteration	
-	g = genotype_matrix.next()
-	l = g.strip('\n').split(',')[1:]
-	for i in range(0, len(l)):
-		for j in range(0, len(l)):
-			snpco[snps[i]][snps[j]] = int(l[i]) * int(l[j])
-
-	#continue for rest of the snp lines
-	for g in genotype_matrix:
-		l = g.strip('\n').split(',')[1:]
-		for i in range(0, len(l)):
-			for j in range(0, len(l)):
-				snpco[snps[i]][snps[j]] = snpco[snps[i]][snps[j]] + (int(l[i]) * int(l[j]))
-
- 	out = open('snpco', 'w')
- 	line = 'SNPs,'
- 	for i in snps:
- 		line = line + i + ','
- 	out.write(line.strip(',') + '\n')
-
- 	for i in snps:
- 		out.write(i + ',')
- 		line = ''
- 		for j in snps:
- 			line = line + str(snpco[i][j]) + ','
- 		out.write(line.strip(',') + '\n')
-
-	return snpco
-
-
-def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp'):
+def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'geneco'):
 	'''
 	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
 	group snps by genes and calculate the gene-based co-occurrence
@@ -160,14 +119,12 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp'):
 				genej = snptogene[j]
 				geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
 
-	out = open('snpco', 'w')
+	out = open(genecofile, 'w')
 	line = 'GENES,'
 	genes = geneco.keys()
 	for gene in genes:
 		line = line+ gene + ','
 	out.write(line.strip(',') + '\n')
-
-
 
 	for i in genes:
 		line =''
@@ -176,8 +133,6 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp'):
  		out.write(line.strip(',') + '\n')
 
  	return geneco
-
-
 
 
 
@@ -299,6 +254,45 @@ def convert_hg18tohg19(liftoverdir = '/home/mkagan/liftover/', chainfilename = '
 			except IndexError:
 				continue
  
+ def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
+	'''
+	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
+	'''
+	genotype_matrix = open(genotype_matrix_file)
+	g = genotype_matrix.next()
+	snps = g.strip('\n').split(',')[1:]
+	snpco = {}
+	for s in snps:
+		snpco[s] = {}
+
+	#initialize k=1 iteration	
+	g = genotype_matrix.next()
+	l = g.strip('\n').split(',')[1:]
+	for i in range(0, len(l)):
+		for j in range(0, len(l)):
+			snpco[snps[i]][snps[j]] = int(l[i]) * int(l[j])
+
+	#continue for rest of the snp lines
+	for g in genotype_matrix:
+		l = g.strip('\n').split(',')[1:]
+		for i in range(0, len(l)):
+			for j in range(0, len(l)):
+				snpco[snps[i]][snps[j]] = snpco[snps[i]][snps[j]] + (int(l[i]) * int(l[j]))
+
+ 	out = open('snpco', 'w')
+ 	line = 'SNPs,'
+ 	for i in snps:
+ 		line = line + i + ','
+ 	out.write(line.strip(',') + '\n')
+
+ 	for i in snps:
+ 		out.write(i + ',')
+ 		line = ''
+ 		for j in snps:
+ 			line = line + str(snpco[i][j]) + ','
+ 		out.write(line.strip(',') + '\n')
+
+	return snpco
 
 
 
@@ -313,6 +307,6 @@ if __name__ == "__main__":
 		insert_from_file(filename = f, cancer = cancertype)
 	if '-make_matrix' in args:
 		make_matrix(args[1], args[2])
-	if '-co_occurr' in args:
-		co_occurr(args[1])
+	if '-co_occurr_gene' in args:
+		co_occurr_gene(args[1], args[2])
 
