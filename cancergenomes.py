@@ -307,6 +307,6 @@ if __name__ == "__main__":
 		insert_from_file(filename = f, cancer = cancertype)
 	if '-make_matrix' in args:
 		make_matrix(args[1], args[2])
-	if '-co_occurr_gene' in args:
-		co_occurr_gene(args[1], args[2])
+	if '-co_occur_gene' in args:
+		co_occur_gene(args[1], args[2])
 
