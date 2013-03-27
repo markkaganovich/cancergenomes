@@ -64,9 +64,9 @@ def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.te
 
 	line = 'SAMPLE,'
 	snpcount = {}
-	for a in allsnps:
-		line = line + a + ','
-		snpcount[a] = 0
+	for snp in allsnps:
+		line = line + snp + ','
+		snpcount[snp] = 0
 	out.write(line.strip(',')+'\n')
 
 	for s in samples:
