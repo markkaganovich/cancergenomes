@@ -87,7 +87,7 @@ def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
 	'''
 	genotype_matrix = open(genotype_matrix_file)
 	g = genotype_matrix.next()
-	snps = genotype_matrixstrip('\n').split(',')[1:]
+	snps = g.strip('\n').split(',')[1:]
 	snpco = {}
 	for s in snps:
 		snpco[s] = {}
