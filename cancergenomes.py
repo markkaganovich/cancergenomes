@@ -73,7 +73,7 @@ def make_matrix(outputfile = 'genotype_matrix.temp'):
 		out.write(s + ',')
 		rows = filter(lambda x: x.Tumor_Sample_Barcode == s and x.Variant_Classification != 'Silent', sam)
 		#rows = session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()
-		rowsnps = map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows)
+		rowsnps = set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows))
 		snps = ''
 		for snp in allsnps:
 			if snp in rowsnps:
@@ -255,4 +255,6 @@ if __name__ == "__main__":
 		f = args[1]
 		cancertype = args[2]
 		insert_from_file(filename = f, cancer = cancertype)
+	if '-make_matrix' in args:
+		make_matrix(args[1])
 
