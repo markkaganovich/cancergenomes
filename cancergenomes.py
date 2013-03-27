@@ -68,7 +68,6 @@ def make_matrix(outputfile = 'genotype_matrix.temp'):
 		line = line + a + ','
 	out.write(line.strip(',')+'\n')
 
-	genotypes = {}
 	for s in samples:
 		out.write(s + ',')
 		rows = filter(lambda x: x.Tumor_Sample_Barcode == s and x.Variant_Classification != 'Silent', sam)
@@ -86,21 +85,22 @@ def co_occurr(genotype_matrix_file = 'genotype_matrix.temp'):
 	'''
 	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
 	'''
-	genotype_matrix = open(genotype_matrix_file).readlines()
-	snps = genotype_matrix[0].strip('\n').split(',')[1:]
+	genotype_matrix = open(genotype_matrix_file)
+	g = genotype_matrix.next()
+	snps = genotype_matrixstrip('\n').split(',')[1:]
 	snpco = {}
 	for s in snps:
 		snpco[s] = {}
 
 	#initialize k=1 iteration	
-	g = genotype_matrix[1]
+	g = genotype_matrix.next()
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
 		for j in range(0, len(l)):
 			snpco[snps[i]][snps[j]] = int(l[i]) * int(l[j])
 
 	#continue for rest of the snp lines
-	for g in genotype_matrix[2:]:
+	for g in genotype_matrix:
 		l = g.strip('\n').split(',')[1:]
 		for i in range(0, len(l)):
 			for j in range(0, len(l)):
@@ -257,4 +257,6 @@ if __name__ == "__main__":
 		insert_from_file(filename = f, cancer = cancertype)
 	if '-make_matrix' in args:
 		make_matrix(args[1])
+	if '-co_occurr' in args:
+		co_occurr(args[1])
 
