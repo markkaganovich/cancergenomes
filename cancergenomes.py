@@ -56,9 +56,11 @@ metadata.create_all(db)
 def make_matrix(outputfile = 'genotype_matrix.temp'):
 	out = open(outputfile, 'w')
 
-	a = session.query(Mutations).filter(Mutations.c.Variant_Classification != 'Silent').all()
-	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
+	#a = session.query(Mutations).filter(Mutations.c.Variant_Classification != 'Silent').all()
+	#allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
 	sam = session.query(Mutations).all()
+	a = list(set(filter(lambda x: x.Variant_Classification != 'Silent', sam)))
+	allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
 	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, sam)))
 
 	line = 'SAMPLE,'
@@ -69,7 +71,7 @@ def make_matrix(outputfile = 'genotype_matrix.temp'):
 	genotypes = {}
 	for s in samples:
 		out.write(s + ',')
-		rows = filter(lambda x: x.Tumor_Sample_Barcode == s)
+		rows = filter(lambda x: x.Tumor_Sample_Barcode == s and x.Variant_Classification != 'Silent', sam)
 		#rows = session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()
 		rowsnps = map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows)
 		snps = ''
