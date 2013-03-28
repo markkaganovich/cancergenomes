@@ -217,7 +217,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
 	for i in select_genes:
 		line =''
-		for j in all_genes:
+		for j in allgenes:
 			line = i + str(geneco[i][j]) + ','
  		out.write(line.strip(',') + '\n')
 
@@ -233,7 +233,7 @@ def write_geneco(geneco, genecofile, allgenes, select_genes):
 
 	for i in select_genes:
 		line =''
-		for j in all_genes:
+		for j in allgenes:
 			line = i + str(geneco[i][j]) + ','
  		out.write(line.strip(',') + '\n')
 
