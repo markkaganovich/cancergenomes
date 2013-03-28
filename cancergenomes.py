@@ -112,7 +112,10 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
 		genei = snptogene[snps[i]]
-		gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		try:
+			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		except KeyError:
+			continue
 	for i in geneco.keys():
 		for j in geneco.keys():
 			geneco[i][j] = gene_genotype[i] * gene_genotype[j]
@@ -131,7 +134,10 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 			gene_genotype[ga] = 0
 		for i in range(0, len(l)):
 			genei = snptogene[snps[i]]
-			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+			try:
+				gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+			except KeyError:
+				continue
 		for i in geneco.keys():
 			for j in geneco.keys():
 				geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]		
