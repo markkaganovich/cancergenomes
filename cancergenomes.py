@@ -223,7 +223,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
  	return geneco
 
- def write_geneco(geneco, genecofile, allgenes, select_genes):
+def write_geneco(geneco, genecofile, allgenes, select_genes):
  	out = open(genecofile, 'w')
 	line = 'GENES,'
 	genes = geneco.keys()
