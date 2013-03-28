@@ -119,7 +119,7 @@ def select_top_genes(genotype_matrix_file = 'genotype_matrix.temp'):
 
 
 
-def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'geneco'):
+def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'geneco', sorted_genes_file = 'sorted_genes'):
 	'''
 	take file of genotype matrix and combine each line to make a co-occurrence matrix for each snp by snp pair
 	group snps by genes and calculate the gene-based co-occurrence
@@ -133,27 +133,29 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 		snp =  a.chromosome + ':' + a.position 
 		snptogene[snp] = a.gene 
 
+	sorted_genes = json.load(open(sorted_genes_file))
+
 	#initialize gene by gene dictionary
 	geneco = {}
 	gene_genotype = {}
-	genecount = {}
+	#genecount = {}
 	allgenes = list(set(snptogene.values()))[0:1000]
+	select_genes = map(lambda x: x[0], sorted_genes)[0:100]
 	for g in allgenes:
-		geneco[g] = {}
 		gene_genotype[g] = 0
+	for g in select_genes:
+		geneco[g] = {}
 
 	#initialize co_occur count: the phastniel algorithm
 	g = genotype_matrix.next()
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
 		genei = snptogene[snps[i]]
-		try:
-			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
-			genecount[genei] = gene_genotype[genei]
-		except KeyError:
-			continue
-	for i in geneco.keys():
-		for j in geneco.keys():
+		#if genei in select_genes:
+		gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		#genecount[genei] = gene_genotype[genei]
+	for i in select_genes:
+		for j in allgenes:
 			geneco[i][j] = gene_genotype[i] * gene_genotype[j]
 
 
@@ -170,14 +172,14 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 			gene_genotype[ga] = 0
 		for i in range(0, len(l)):
 			genei = snptogene[snps[i]]
-			try:
-				gene_genotype[genei] = gene_genotype[genei] + int(l[i])
-				genecount[genei] = genecount[genei] + gene_genotype[genei]
-				for i in geneco.keys():
-					for j in geneco.keys():
-						geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]	
-			except KeyError:
-				continue	
+			#try:
+			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+				#genecount[genei] = genecount[genei] + gene_genotype[genei]
+			for i in select_genes:
+				for j in allgenes():
+					geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]	
+			#except KeyError:
+			#	continue	
 
 
 		#for i in range(0, len(l)):
@@ -189,14 +191,14 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	out = open(genecofile, 'w')
 	line = 'GENES,'
 	genes = geneco.keys()
-	for gene in genes:
-		line = line+ gene + ','
+	for gene in allgenes:
+		line = line + gene + ','
 	out.write(line.strip(',') + '\n')
 
-	for i in genes:
+	for i in select_genes:
 		line =''
-		for j in genes:
-			line = line + str(geneco[i][j]) + ','
+		for j in all_genes:
+			line = i + str(geneco[i][j]) + ','
  		out.write(line.strip(',') + '\n')
 
  	return geneco
