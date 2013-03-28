@@ -103,11 +103,11 @@ def select_top_genes(genotype_matrix_file = 'genotype_matrix.temp'):
 	for g in allgenes:
 		genecount[g] = 0
 
-	g = genotype_matrix.next()
-	l = g.strip('\n').split(',')[1:]
-	for i in range(0, len(l)):
-		genei = snptogene[snps[i]]
-		genecount[genei] = genecount[genei] + int(l[i])
+	for g in genotype_matrix:
+		l = g.strip('\n').split(',')[1:]
+		for i in range(0, len(l)):
+			genei = snptogene[snps[i]]
+			genecount[genei] = genecount[genei] + int(l[i])
 
 	sorted_genes = sorted(genecount.iteritems(), key=operator.itemgetter(1))[0:200]
 	json.dump(sorted_genes, open('sorted_genes', 'w'))
