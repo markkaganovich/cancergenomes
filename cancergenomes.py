@@ -110,7 +110,7 @@ def select_top_genes(genotype_matrix_file = 'genotype_matrix.temp'):
 		genecount[genei] = genecount[genei] + int(l[i])
 
 	sorted_genes = sorted(genecount.iteritems(), key=operator.itemgetter(1))[0:200]
-	json(sorted_genes, open('sorted_genes', 'w'))
+	json.dump(sorted_genes, open('sorted_genes', 'w'))
 
 	return sorted_genes
 
