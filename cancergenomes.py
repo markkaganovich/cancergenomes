@@ -5,6 +5,7 @@ import sys
 import json
 import commands
 import os
+import operator
 
 db = create_engine('sqlite:///tcga.db')
 db.echo = False
@@ -70,19 +71,52 @@ def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.te
 	out.write(line.strip(',')+'\n')
 
 	for s in samples:
-		out.write(s + ',')
-		rows = filter(lambda x: x.Tumor_Sample_Barcode == s, a)
-		rowsnps = set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows))
-		snps = ''
-		for snp in allsnps:
-			if snp in rowsnps:
-				snps = snps + '1' + ','
-				snpcount[snp] = snpcount[snp] + 1
-			else:
-				snps = snps + '0' + ','
-				snpcount[snp] = snpcount[snp] + 0
-		out.write(snps.strip(',')+'\n')
+		try:
+			out.write(s + ',')
+			rows = filter(lambda x: x.Tumor_Sample_Barcode == s, a)
+			rowsnps = set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows))
+			snps = ''
+			for snp in allsnps:
+				if snp in rowsnps:
+					snps = snps + '1' + ','
+					snpcount[snp] = snpcount[snp] + 1
+				else:
+					snps = snps + '0' + ','
+					snpcount[snp] = snpcount[snp] + 0
+			out.write(snps.strip(',')+'\n')
+		except:
+			continue
 	json.dump(snpcount, snpcountout)
+
+def select_top_genes(genotype_matrix_file = 'genotype_matrix.temp'):
+	genotype_matrix = open(genotype_matrix_file)
+	g = genotype_matrix.next()
+	snps = g.strip('\n').split(',')[1:]
+	alls = session.query(Snps).all()
+	snptogene = {}
+	for a in alls:
+		snp =  a.chromosome + ':' + a.position 
+		snptogene[snp] = a.gene 
+
+	genecount = {}
+	allgenes = list(set(snptogene.values()))
+	for g in allgenes:
+		genecount[g] = 0
+
+	g = genotype_matrix.next()
+	l = g.strip('\n').split(',')[1:]
+	for i in range(0, len(l)):
+		genei = snptogene[snps[i]]
+		genecount[genei] = gene_genotype[genei] + int(l[i])
+
+	sorted_genes = sorted(genecount.iteritems(), key=operator.itemgetter(1))[0:200]
+	json(sorted_genes, open('sorted_genes', 'w'))
+
+	return sorted_genes
+
+
+
+
 
 
 def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'geneco'):
@@ -102,6 +136,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	#initialize gene by gene dictionary
 	geneco = {}
 	gene_genotype = {}
+	genecount = {}
 	allgenes = list(set(snptogene.values()))[0:1000]
 	for g in allgenes:
 		geneco[g] = {}
@@ -114,6 +149,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 		genei = snptogene[snps[i]]
 		try:
 			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+			genecount[genei] = gene_genotype[genei]
 		except KeyError:
 			continue
 	for i in geneco.keys():
@@ -136,11 +172,12 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 			genei = snptogene[snps[i]]
 			try:
 				gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+				genecount[genei] = genecount[genei] + gene_genotype[genei]
+				for i in geneco.keys():
+					for j in geneco.keys():
+						geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]	
 			except KeyError:
-				continue
-		for i in geneco.keys():
-			for j in geneco.keys():
-				geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]		
+				continue	
 
 
 		#for i in range(0, len(l)):
