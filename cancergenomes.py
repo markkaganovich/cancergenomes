@@ -175,7 +175,9 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
 
 	#continue for rest of snp lines
+	sampleindex = 0
 	for g in genotype_matrix:
+		sampleindex = sampleindex + 1
 		print g.split(',')[0]
 		l = g.strip('\n').split(',')[1:]
 		for ga in allgenes:
@@ -194,6 +196,8 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 					geneco[gi][gj] = geneco[gi][gj] + gene_genotype[gi] * gene_genotype[gj]
 				except KeyError:	
 					continue	
+		if sampleindex in [10, 100, 500]:
+			write_geneco(geneco, genecofile+str(sampleindex), allgenes, select_genes)
 			#except KeyError:
 			#	continue	
 
@@ -218,6 +222,21 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
  		out.write(line.strip(',') + '\n')
 
  	return geneco
+
+ def write_geneco(geneco, genecofile, allgenes, select_genes):
+ 	out = open(genecofile, 'w')
+	line = 'GENES,'
+	genes = geneco.keys()
+	for gene in allgenes:
+		line = line + gene + ','
+	out.write(line.strip(',') + '\n')
+
+	for i in select_genes:
+		line =''
+		for j in all_genes:
+			line = i + str(geneco[i][j]) + ','
+ 		out.write(line.strip(',') + '\n')
+
 
 
 
