@@ -159,7 +159,10 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 		#genecount[genei] = gene_genotype[genei]
 	for i in select_genes:
 		for j in allgenes:
-			geneco[i][j] = gene_genotype[i] * gene_genotype[j]
+			try:
+				geneco[i][j] = gene_genotype[i] * gene_genotype[j]
+			except KeyError:
+				continue
 
 
 		#for j in range(0, len(l)):
