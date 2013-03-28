@@ -93,7 +93,11 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	genotype_matrix = open(genotype_matrix_file)
 	g = genotype_matrix.next()
 	snps = g.strip('\n').split(',')[1:]
-	snptogene = map(lambda x: session.query(Snps).filter(and_(Snps.c.chromosome == x.split(':')[0], Snps.c.position == x.split(':')[1])).first().gene, snps) 
+	alls = session.query(Snps).all()
+	snptogene = {}
+	for a in alls:
+		snp =  a.chromosome + ':' + a.position 
+		snptogene[snp] = a.gene 
 
 	#initialize gene by gene dictionary
 	geneco = {}
@@ -105,18 +109,18 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	g = genotype_matrix.next()
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
-		genei = snptogene[i]
+		genei = snptogene[l[i]]
 		for j in range(0, len(l)):
-			genej = snptogene[j]
+			genej = snptogene[l[j]]
 			geneco[genei][genej] = int(l[i]) * int(l[j])
 
 	#continue for rest of snp lines
 	for g in genotype_matrix:
 		l = g.strip('\n').split(',')[1:]
 		for i in range(0, len(l)):
-			genei = snptogene[i]
+			genei = snptogene[[i]]
 			for j in range(0, len(l)):
-				genej = snptogene[j]
+				genej = snptogene[[j]]
 				geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
 
 	out = open(genecofile, 'w')
