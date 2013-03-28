@@ -393,5 +393,5 @@ if __name__ == "__main__":
 	if '-make_matrix' in args:
 		make_matrix(args[1], args[2])
 	if '-co_occur_gene' in args:
-		co_occur_gene(args[1], args[2])
+		co_occur_gene(args[1], args[2], args[3])
 
