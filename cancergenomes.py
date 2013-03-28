@@ -101,27 +101,47 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
 	#initialize gene by gene dictionary
 	geneco = {}
-	allgenes = list(set(snptogene.values()))
+	gene_genotype = {}
+	allgenes = list(set(snptogene.values()))[0:1000]
 	for g in allgenes:
 		geneco[g] = {}
+		gene_genotype[g] = 0
 
 	#initialize co_occur count: the phastniel algorithm
 	g = genotype_matrix.next()
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
 		genei = snptogene[snps[i]]
-		for j in range(0, len(l)):
-			genej = snptogene[snps[j]]
-			geneco[genei][genej] = int(l[i]) * int(l[j])
+		gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+	for i in geneco.keys():
+		for j in geneco.keys():
+			geneco[i][j] = gene_genotype[i] * gene_genotype[j]
+
+
+		#for j in range(0, len(l)):
+	#		genej = snptogene[snps[j]]
+	#		geneco[genei][genej] = int(l[i]) * int(l[j])
+
+
 
 	#continue for rest of snp lines
 	for g in genotype_matrix:
 		l = g.strip('\n').split(',')[1:]
+		for ga in allgenes:
+			gene_genotype[ga] = 0
 		for i in range(0, len(l)):
 			genei = snptogene[snps[i]]
-			for j in range(0, len(l)):
-				genej = snptogene[snps[j]]
-				geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
+			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		for i in geneco.keys():
+			for j in geneco.keys():
+				geneco[i][j] = geneco[i][j] + gene_genotype[i] * gene_genotype[j]		
+
+
+		#for i in range(0, len(l)):
+		#	genei = snptogene[snps[i]]
+		#	for j in range(0, len(l)):
+		#		genej = snptogene[snps[j]]
+		#		geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
 
 	out = open(genecofile, 'w')
 	line = 'GENES,'
