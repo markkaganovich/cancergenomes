@@ -197,7 +197,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 				except KeyError:	
 					continue	
 		if sampleindex in [10, 100, 500]:
-			write_geneco(geneco, genecofile+str(sampleindex), allgenes, select_genes)
+			write_geneco(geneco, genecofile+'_'+str(sampleindex), allgenes, select_genes)
 			#except KeyError:
 			#	continue	
 
@@ -218,7 +218,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	for i in select_genes:
 		line =''
 		for j in allgenes:
-			line = i + str(geneco[i][j]) + ','
+			line = line + i + str(geneco[i][j]) + ','
  		out.write(line.strip(',') + '\n')
 
  	return geneco
@@ -232,9 +232,9 @@ def write_geneco(geneco, genecofile, allgenes, select_genes):
 	out.write(line.strip(',') + '\n')
 
 	for i in select_genes:
-		line =''
+		line = i +','
 		for j in allgenes:
-			line = i + str(geneco[i][j]) + ','
+			line = line + str(geneco[i][j]) + ','
  		out.write(line.strip(',') + '\n')
 
 
