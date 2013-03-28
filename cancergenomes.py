@@ -101,7 +101,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
 	#initialize gene by gene dictionary
 	geneco = {}
-	allgenes = list(set(map(lambda x: x.gene, session.query(Snps).all())))
+	allgenes = liset(set(snptogene.values()))
 	for g in allgenes:
 		geneco[g] = {}
 
