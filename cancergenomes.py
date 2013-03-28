@@ -152,7 +152,10 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	for i in range(0, len(l)):
 		genei = snptogene[snps[i]]
 		#if genei in select_genes:
-		gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		if genei in allgenes:
+			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+		else:
+			continue
 		#genecount[genei] = gene_genotype[genei]
 	for i in select_genes:
 		for j in allgenes:
