@@ -139,8 +139,10 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	geneco = {}
 	gene_genotype = {}
 	#genecount = {}
-	allgenes = list(set(snptogene.values()))[0:1000]
 	select_genes = map(lambda x: x[0], sorted_genes)[0:100]
+	allgenes = list(set(snptogene.values()))[0:1000]
+	allgenes.extend(select_genes)
+	allgenes = list(set(allgenes))
 	for g in allgenes:
 		gene_genotype[g] = 0
 	for g in select_genes:
@@ -153,7 +155,8 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 		genei = snptogene[snps[i]]
 		#if genei in select_genes:
 		if genei in allgenes:
-			gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+			if int(l[i]) == 1:
+				gene_genotype[genei] = 1
 		else:
 			continue
 		#genecount[genei] = gene_genotype[genei]
@@ -173,6 +176,7 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 
 	#continue for rest of snp lines
 	for g in genotype_matrix:
+		print g.split(',')[0]
 		l = g.strip('\n').split(',')[1:]
 		for ga in allgenes:
 			gene_genotype[ga] = 0
@@ -180,7 +184,9 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 			genei = snptogene[snps[i]]
 			#try:
 			if genei in allgenes:
-				gene_genotype[genei] = gene_genotype[genei] + int(l[i])
+				if int(l[i]) == 1:
+					gene_genotype[genei] = 1
+				#gene_genotype[genei] = gene_genotype[genei] + int(l[i])
 				#genecount[genei] = genecount[genei] + gene_genotype[genei]
 		for gi in select_genes:
 			for gj in allgenes:
