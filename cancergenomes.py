@@ -109,18 +109,18 @@ def co_occur_gene(genotype_matrix_file = 'genotype_matrix.temp', genecofile = 'g
 	g = genotype_matrix.next()
 	l = g.strip('\n').split(',')[1:]
 	for i in range(0, len(l)):
-		genei = snptogene[l[i]]
+		genei = snptogene[snps[i]]
 		for j in range(0, len(l)):
-			genej = snptogene[l[j]]
+			genej = snptogene[snps[j]]
 			geneco[genei][genej] = int(l[i]) * int(l[j])
 
 	#continue for rest of snp lines
 	for g in genotype_matrix:
 		l = g.strip('\n').split(',')[1:]
 		for i in range(0, len(l)):
-			genei = snptogene[[i]]
+			genei = snptogene[snps[i]]
 			for j in range(0, len(l)):
-				genej = snptogene[[j]]
+				genej = snptogene[snps[j]]
 				geneco[genei][genej] = geneco[genei][genej] + (int(l[i]) * int(l[j]))
 
 	out = open(genecofile, 'w')
