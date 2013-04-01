@@ -258,7 +258,7 @@ def count(Query):
 
 def print_related_genes(gene, outputfilename):
 
-	out = open('outputfilename')
+	out = open('outputfilename','w')
 	l = session.query(Mutations).filter(Mutations.c.Hugo_Symbol == gene).all()
 	l_set = list(set(l))
 	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, l_set)))
