@@ -269,7 +269,7 @@ def print_related_genes(gene, outputfilename):
 		all_mutations = session.query(Mutations).filter(Mutations.c.Tumor_Sample_Barcode == s).all()
 		for a_m in all_mutations:
 			if a_m.Hugo_Symbol != gene:
-				out.write('\t'+ a_m.Hugo_Symbol + '\t' a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + '\n')
+				out.write('\t'+ a_m.Hugo_Symbol + '\t'+ a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + '\n')
 
 
 
