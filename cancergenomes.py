@@ -238,6 +238,8 @@ def write_geneco(geneco, genecofile, allgenes, select_genes):
  		out.write(line.strip(',') + '\n')
 
 
+'''
+What the fuck is this
 
 
 def count(Query):
@@ -252,6 +254,23 @@ def count(Query):
 			duplicateinds.append(i)
 	num = len(rows) - len(duplicateinds)/2
 	return num
+'''
+
+def print_related_genes(gene, outputfilename):
+
+	out = open('outputfilename')
+	l = session.query(Mutations).filter(Mutations.c.Hugo_Symbol == gene).all()
+	l_set = list(set(l))
+	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, l_set)))
+	for s in samples:
+		s_mutations = filter(lambda x: x.Tumor_Sample_Barcode == s, l_set)
+		for i in s_mutations:
+			out.write(i.cancer + str(i.Tumor_Sample_Barcode) +'\t' + str(i.Chromosome) +'\t'+ str(i.Start_Position) +str(i.Variant_Classification) + '\n')
+		all_mutations = session.query(Mutations).filter(Mutations.c.Tumor_Sample_Barcode == s).all()
+		for a_m in all_mutations:
+			if a_m.Hugo_Symbol != gene:
+				out.write('\t'+ a_m.Hugo_Symbol + '\t' a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + '\n')
+
 
 
 def make_snptogenetable(genotable = Mutations):
