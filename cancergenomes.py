@@ -258,15 +258,15 @@ def count(Query):
 
 def print_related_genes(gene, outputfilename):
 
-	out = open('outputfilename','w')
+	out = open(outputfilename,'w')
 	l = session.query(Mutations).filter(and_(Mutations.c.Hugo_Symbol == gene, Mutations.c.Variant_Classification != 'Silent')).all()
 	l_set = list(set(l))
 	samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, l_set)))
 	for s in samples:
 		s_mutations = filter(lambda x: x.Tumor_Sample_Barcode == s, l_set)
 		for i in s_mutations:
-			out.write(i.cancer + str(i.Tumor_Sample_Barcode) +'\t' + str(i.Chromosome) +'\t'+ str(i.Start_Position) +str(i.Variant_Classification) + '\n')
-		all_mutations = list(set(session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification)).all()))
+			out.write(i.cancer + '\t' + str(i.Tumor_Sample_Barcode) +'\t' + str(i.Chromosome) +'\t'+ str(i.Start_Position) + '\t' +str(i.Variant_Classification) + '\n')
+		all_mutations = list(set(session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()))
 		for a_m in all_mutations:
 			if a_m.Hugo_Symbol != gene:
 				out.write('\t'+ a_m.Hugo_Symbol + '\t'+ a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + '\n')
