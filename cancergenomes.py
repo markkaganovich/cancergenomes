@@ -265,11 +265,12 @@ def print_related_genes(gene, outputfilename):
 	for s in samples:
 		s_mutations = filter(lambda x: x.Tumor_Sample_Barcode == s, l_set)
 		for i in s_mutations:
-			out.write(i.cancer + '\t' + str(i.Tumor_Sample_Barcode) +'\t' + str(i.Chromosome) +'\t'+ str(i.Start_Position) + '\t' +str(i.Variant_Classification) + '\n')
+			out.write(i.cancer + '\t' + str(i.Tumor_Sample_Barcode) +'\t' + str(i.Chromosome) +'\t'+ str(i.Start_Position) + '\t' +str(i.Variant_Classification) + \
+				+ str(i.Reference_Allele) + '\t' + str(i.Matched_Norm_Seq_Allele1) + str(i.Matched_Norm_Validation_Allele2) + '\t' + str(i.Tumor_Seq_Allele1) + '\t' + str(i.Tumor_Seq_Allele2) +'\n' )
 		all_mutations = list(set(session.query(Mutations).filter(and_(Mutations.c.Tumor_Sample_Barcode == s, Mutations.c.Variant_Classification != 'Silent')).all()))
 		for a_m in all_mutations:
 			if a_m.Hugo_Symbol != gene:
-				out.write('\t'+ a_m.Hugo_Symbol + '\t'+ a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + '\n')
+				out.write('\t'+ a_m.Hugo_Symbol + '\t'+ a_m.Variant_Classification + '\t' + str(a_m.Chromosome) + '\t' + str(a_m.Start_Position) + str(a_m.Reference_Allele) + '\t' + str(a_m.Tumor_Seq_Allele1) + '\t' + str(a_m.Tumor_Seq_Allele2) +'\n')
 
 
 
