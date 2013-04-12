@@ -22,6 +22,8 @@ def make_table(filename = 'testheader2', tablename = None, db = None):
 	Session = sessionmaker(db)
 	session = Session()
 
+	print metadata.tables.keys()
+
 	fieldnames, delim = headers.find_fieldnames(filename)
 	#check that fieldnames are desired column names
 	columns = map(lambda x: headers.synonyms(x), fieldnames)
