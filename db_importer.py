@@ -35,7 +35,8 @@ def make_table(filename = 'testheader2', tablename = None, db = None):
 	reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = delim)
 
 	if tablename in metadata.tables.keys():
-		table = Table(tablename, metadata, autoload = True)
+		#table = Table(tablename, metadata, autoload = True)
+		table = metadata.tables[tablename]
 	else:
 		table = None
 	
