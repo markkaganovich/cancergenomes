@@ -28,7 +28,7 @@ def make_table(filename = 'testheader2'):
 	try:
 		tablename = headers.file_to_table[filename]
 	except KeyError:
-		tablename = 'test'
+		tablename = filename
 		print "Need table name, change this to assert when this becomes a function"
 
 	csvfile = open(filename, 'r')
