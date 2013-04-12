@@ -18,4 +18,4 @@ db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
 for f in files:
 	print f
-	db_importer.make_table(filename = f, tablename = 'hapmap_raw', db = db)
+	db_importer.make_table(filename = f, tablename = 'hapmap_raw_1.0', db = db)
