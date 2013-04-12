@@ -39,9 +39,12 @@ def make_table(filename = 'testheader2', tablename = None, db = None):
 	else:
 		table = None
 	
+	print "here"
+
 	for row in reader:
 		if table is None:
 			#create the table
+			print metadata.tables.keys()
 			table = Table(tablename, metadata, 
 	        	Column('id', Integer, primary_key=True),
 	            *(Column(rowname, String()) for rowname in columns))
