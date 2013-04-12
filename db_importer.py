@@ -14,7 +14,7 @@ import os
 import csv 
 import headers
 
-db = create_engine('sqlite:///GENOTYPES.db', echo = True)
+#db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
 def make_table(filename = 'testheader2', tablename = None, db = None):
 

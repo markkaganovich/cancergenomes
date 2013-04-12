@@ -3,6 +3,7 @@
 import db_importer
 import os
 import re
+from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 
 directory = 'mark/genotypes/'
 matched_files = map(lambda x: re.match(r'hapmapchr+(\d*\Z)', x), os.listdir(directory))
