@@ -22,14 +22,21 @@ def find_fieldnames(infile):
 
 def synonyms(fieldname):
 	try:
-		col = syn[fieldname]
+		col = syn[fieldname.lower()]
 	except KeyError:
-		col = fieldname
+		col = fieldname.lower()
 	return col
 
+def get_tablename(filename):
+	try:
+		tn = file_to_table[filename]
+	except KeyError:
+		tn = filename
+	return tn
 
 ###############################################################################
-syn = {'Chromosome': 'Chrom',
+syn = {'chromosome': 'chrom',
+		'chr':'chrom',
 		'IID' : 'cell_line_id'
 		}
 

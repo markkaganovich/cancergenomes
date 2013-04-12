@@ -14,27 +14,29 @@ import os
 import csv 
 import headers
 
-def make_table(filename = 'testheader2'):
+db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
-	db = create_engine('sqlite:///GENOTYPES.db', echo = True)
+def make_table(filename = 'testheader2', tablename = None, db = None):
+
 	metadata = MetaData(db)
 	Session = sessionmaker(db)
-	session = Session()	
+	session = Session()
 
 	fieldnames, delim = headers.find_fieldnames(filename)
 	#check that fieldnames are desired column names
 	columns = map(lambda x: headers.synonyms(x), fieldnames)
 
-	try:
-		tablename = headers.file_to_table[filename]
-	except KeyError:
-		tablename = filename
-		print "Need table name, change this to assert when this becomes a function"
+	if tablename is None:
+		tablename = headers.get_tablename(filename)
 
 	csvfile = open(filename, 'r')
 	reader = csv.DictReader(csvfile, fieldnames = fieldnames, delimiter = delim)
 
-	table = None
+	if tablename in metadata.tables.keys():
+		table = Table(tablename, metadata, autoload = True)
+	else:
+		table = None
+	
 	for row in reader:
 		if table is None:
 			#create the table
