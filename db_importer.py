@@ -16,7 +16,26 @@ import headers
 
 #db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
-def make_table(filename = 'testheader2', tablename = None, db = None):
+def make_table(tablename = None, db = None, columns = []):
+
+	metadata = MetaData(db)
+	Session = sessionmaker(db)
+	session = Session()
+
+	if db.dialect.has_table(db.connect(), tablename):
+		table = Table(tablename, metadata, autoload = True)
+	else:
+		table = Table(tablename, metadata, 
+	        	Column('id', Integer, primary_key=True),
+	            *(Column(rowname, String()) for rowname in columns))
+		table.create()
+	session.commit()
+
+	return table
+
+
+
+def import_data(filename = 'testheader2', tablename = None, db = None):
 
 	metadata = MetaData(db)
 	Session = sessionmaker(db)
@@ -34,24 +53,10 @@ def make_table(filename = 'testheader2', tablename = None, db = None):
 	csvfile = open(filename, 'r')
 	reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = delim)
 
-	if tablename in metadata.tables.keys():
-		#table = Table(tablename, metadata, autoload = True)
-		table = metadata.tables[tablename]
-	else:
-		table = None
-	
-	print "here"
+	table = make_table(tablename, db, columns)
 
 	for row in reader:
-		if table is None:
-			#create the table
-			print metadata.tables.keys()
-			table = Table(tablename, metadata, 
-	        	Column('id', Integer, primary_key=True),
-	            *(Column(rowname, String()) for rowname in columns))
-			table.create()
-		else:
-			table.insert().values(**row).execute()
+		table.insert().values(**row).execute()
 
 	session.commit()
 
