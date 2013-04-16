@@ -20,7 +20,7 @@ Session = sessionmaker(db)
 session = Session()
 
 directory = 'mark/cancerdata/'
-matched_files = map(lambda x: re.match(r'.maf(\Z)', x), os.listdir(directory))
+matched_files = map(lambda x: re.match(r'[a-zA-Z.]maf(\Z)', x), os.listdir(directory))
 files = []
 for m in matched_files:
     if m:
