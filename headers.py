@@ -38,6 +38,7 @@ def get_tablename(filename):
 syn = {'chromosome': 'chrom',
 		'chr':'chrom',
 		'IID' : 'cell_line_id'
+		'id' : 'rs#'   # this is going to be an issue: ID fieldname messes with 'id' column name 
 		}
 
 file_to_table = {'draft2_samples_QC+.txt': 'hapmap_draft2_samples'}
