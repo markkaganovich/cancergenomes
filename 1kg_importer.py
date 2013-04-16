@@ -5,7 +5,7 @@ import os
 import re
 from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 
-files = ['../1000GenomesData/CEU.low_coverage.2010_09.genotypes.vcf', '../1000GenomesData/YRI.low_coverage.2010_09.genotypes.vcf', '../1000GenomesData/CHBJPT.low_coverage.2010_09.genotypes.vcf', '../1000GenomesData/YRI.trio.2010_09.genotypes.vcf', '../1000GenomesData/CEU.trio.2010_09.genotypes.vcf']
+files = ['../1000GenomesData/CEU.lowcov.header', '../1000GenomesData/YRI.lowcov.header', '../1000GenomesData/CHBJPT.lowcov.header', '../1000GenomesData/YRI.trio.header', '../1000GenomesData/CEU.trio.header']
 
 db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
