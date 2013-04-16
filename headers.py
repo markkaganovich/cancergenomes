@@ -61,7 +61,7 @@ def explore_headers(files):
 	for f in files:
 		fieldname, delim = find_fieldnames(f)
 		for fn in fieldname:
-			out.write(fn)
+			out.write(fn + '\t')
 		out.write('\n')
 
 
