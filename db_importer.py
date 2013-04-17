@@ -42,7 +42,7 @@ def get_key_columns(colname, key_columns):
 		return False
 
 
-def import_data(filename = 'testheader2', tablename = None, db = None, extra_columns = None):
+def import_data(filename = 'testheader2', tablename = None, db = None, extra_columns = None, key_columns = None):
 
 	Session = sessionmaker(db)
 	session = Session()
@@ -60,7 +60,7 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 	csvfile = open(filename, 'r')
 	reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = delim)
 
-	table = make_table(tablename, db, columns)
+	table = make_table(tablename, db, columns, key_columns)
 
 	for row in reader:
 		if extra_columns is not None:
