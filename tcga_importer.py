@@ -1,13 +1,7 @@
 # tcga importer
 
 from sqlalchemy import *
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql import and_, or_
-import sys
-import json
-import commands
 import os
-import operator
 import re
 
 import headers
