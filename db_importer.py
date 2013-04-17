@@ -69,7 +69,7 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 		if extra_columns is not None:
 			row.update(extra_columns)
 		print('\n')
-		print values(**row)
+		print table.insert().values(**row)
 		table.insert().values(**row).execute()
 
 	session.commit()
