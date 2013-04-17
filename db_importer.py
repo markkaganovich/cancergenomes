@@ -60,6 +60,8 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 	csvfile = open(filename, 'r')
 	reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = delim)
 
+	print columns
+
 	table = make_table(tablename, db, columns, key_columns)
 
 	for row in reader:
