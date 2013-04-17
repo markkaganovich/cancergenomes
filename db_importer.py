@@ -68,7 +68,7 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 		print row
 		if extra_columns is not None:
 			row.update(extra_columns)
-		table.insert().values(**row).execute()
+		table.insert(prefixes=['OR IGNORE']).values(**row).execute()
 
 	session.commit()
 
