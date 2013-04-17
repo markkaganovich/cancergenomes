@@ -28,7 +28,7 @@ def make_table(tablename = None, db = None, columns = [], key_columns = None):
 		table = Table(tablename, metadata, autoload = True)
 	else:
 		table = Table(tablename, metadata, 
-	        	Column('id', Integer, primary_key=True),
+	        	#Column('id', Integer, primary_key=True),
 	            *(Column(rowname, String(), primary_key = get_key_columns(rowname, key_columns)) for rowname in columns))
 		table.create()
 	session.commit()
@@ -68,8 +68,6 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 		print row
 		if extra_columns is not None:
 			row.update(extra_columns)
-		print('\n')
-		print table.insert().values(**row)
 		table.insert().values(**row).execute()
 
 	session.commit()
