@@ -35,17 +35,17 @@ def make_table(tablename = None, db = None, columns = []):
 
 
 
-def import_data(filename = 'testheader2', tablename = None, db = None):
+def import_data(filename = 'testheader2', tablename = None, db = None, extra_columns = None):
 
-	metadata = MetaData(db)
 	Session = sessionmaker(db)
 	session = Session()
 
-	print metadata.tables.keys()
-
 	fieldnames, delim = headers.find_fieldnames(filename)
+	
 	#check that fieldnames are desired column names
 	columns = map(lambda x: headers.synonyms(x), fieldnames)
+	if extra_columns is not None:
+		columns.extend(extra_columns.keys())
 
 	if tablename is None:
 		tablename = headers.get_tablename(filename)
@@ -56,6 +56,8 @@ def import_data(filename = 'testheader2', tablename = None, db = None):
 	table = make_table(tablename, db, columns)
 
 	for row in reader:
+		if extra_columns is not None:
+			row.update(extra_columns)
 		table.insert().values(**row).execute()
 
 	session.commit()

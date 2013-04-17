@@ -13,7 +13,7 @@ import re
 import headers
 import db_importer
 
-db = create_engine('sqlite:///tcga_2.db', echo = False)
+db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 
 metadata = MetaData(db)
 Session = sessionmaker(db)
@@ -26,6 +26,8 @@ for m in matched_files:
     if m:
         f = directory+m.group()
         files.append(f)
+        cancer = re.search('[A-Z]+', f)    
+        db_importer.import_data(filename = f, tablename = 'mutations_v1', db = db, extra_columns = {'cancer_type': cancer, 'filename' : m.group()})
 
 headers.explore_headers(files)
 

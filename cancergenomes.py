@@ -31,13 +31,13 @@ Mutations = Table('Mutations', metadata,
 	Column('Tumor_Seq_Allele1', String),
 	Column('Tumor_Seq_Allele2', String),
 	Column('Tumor_Sample_Barcode', String),
-	Column('Matched_Norm_Sample_Barcode', String),
-	Column('Matched_Norm_Seq_Allele1', String),
-	Column('Matched_Norm_Seq_Allele2', String),
+	Column('Match_Norm_Sample_Barcode', String),
+	Column('Match_Norm_Seq_Allele1', String),
+	Column('Match_Norm_Seq_Allele2', String),
 	Column('Tumor_Validation_Allele1', String),
 	Column('Tumor_Validation_Allele2', String),
-	Column('Matched_Norm_Validation_Allele1', String),
-	Column('Matched_Norm_Validation_Allele2', String),
+	Column('Match_Norm_Validation_Allele1', String),
+	Column('Match_Norm_Validation_Allele2', String),
 	Column('Validation_Status', String),
 	Column('Mutation_Status', String),
 	Column('Sequencer', String),
@@ -113,9 +113,6 @@ def select_top_genes(genotype_matrix_file = 'genotype_matrix.temp'):
 	json.dump(sorted_genes, open('sorted_genes', 'w'))
 
 	return sorted_genes
-
-
-
 
 
 
