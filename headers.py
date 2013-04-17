@@ -32,6 +32,7 @@ def synonyms(fieldname):
 	'''
 	return key in syn table that is synonyms with the given fieldname
 	'''
+	col = None
 	for k in syn.keys():
 		if fieldname.lower() in syn[k]:
 			col = k
