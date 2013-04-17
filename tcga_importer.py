@@ -15,10 +15,6 @@ import db_importer
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 
-metadata = MetaData(db)
-Session = sessionmaker(db)
-session = Session()
-
 directory = 'mark/cancerdata/'
 matched_files = map(lambda x: re.match(r'[a-zA-Z.]*maf(\Z)', x), os.listdir(directory))
 files = []
