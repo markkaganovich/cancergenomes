@@ -22,8 +22,6 @@ def make_table(tablename = None, db = None, columns = [], key_columns = None):
 	Session = sessionmaker(db)
 	session = Session()
 
-	print columns
-
 	if db.dialect.has_table(db.connect(), tablename):
 		table = Table(tablename, metadata, autoload = True)
 	else:
