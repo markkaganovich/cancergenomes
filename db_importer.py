@@ -22,6 +22,8 @@ def make_table(tablename = None, db = None, columns = [], key_columns = None):
 	Session = sessionmaker(db)
 	session = Session()
 
+	print columns
+
 	if db.dialect.has_table(db.connect(), tablename):
 		table = Table(tablename, metadata, autoload = True)
 	else:
@@ -60,13 +62,14 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 	csvfile = open(filename, 'r')
 	reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = delim)
 
-	print columns
-
 	table = make_table(tablename, db, columns, key_columns)
 
 	for row in reader:
+		print row
 		if extra_columns is not None:
 			row.update(extra_columns)
+		print('\n')
+		print row
 		table.insert().values(**row).execute()
 
 	session.commit()
