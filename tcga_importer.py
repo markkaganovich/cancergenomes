@@ -26,9 +26,11 @@ for m in matched_files:
     if m:
         f = directory+m.group()
         files.append(f)
-        cancer = re.search('[A-Z]+', f)    
-        db_importer.import_data(filename = f, tablename = 'mutations_v1', db = db, extra_columns = {'cancer_type': cancer, 'filename' : m.group()})
+        cancer = re.search('[A-Z]+', f)  
+        primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
+        add_columns = {'cancer_type': cancer, 'filename' : m.group()}
+        db_importer.import_data(filename = f, tablename = 'mutations_v1', db = db, extra_columns = add_columns, key_columns = primary_keys)
 
-headers.explore_headers(files)
 
+#headers.explore_headers(files)
 

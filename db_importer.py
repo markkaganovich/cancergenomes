@@ -16,7 +16,7 @@ import headers
 
 #db = create_engine('sqlite:///GENOTYPES.db', echo = True)
 
-def make_table(tablename = None, db = None, columns = []):
+def make_table(tablename = None, db = None, columns = [], key_columns = None):
 
 	metadata = MetaData(db)
 	Session = sessionmaker(db)
@@ -27,12 +27,19 @@ def make_table(tablename = None, db = None, columns = []):
 	else:
 		table = Table(tablename, metadata, 
 	        	Column('id', Integer, primary_key=True),
-	            *(Column(rowname, String()) for rowname in columns))
+	            *(Column(rowname, String(), primary_key = get_key_columns(rowname, key_columns)) for rowname in columns))
 		table.create()
 	session.commit()
 
 	return table
 
+def get_key_columns(colname, key_columns):
+	if key_columns is None:
+		return False
+	if colname in key_columns:
+		return True
+	else:
+		return False
 
 
 def import_data(filename = 'testheader2', tablename = None, db = None, extra_columns = None):
