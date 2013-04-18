@@ -8,6 +8,8 @@ import commands
 import os
 import operator
 
+import db_importer
+
 
 def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/home/mkagan/liftover/', chainfilename = 'hg18tohg19.over.chain'):
     db.dialect.get_table_names(db.connect())
@@ -52,6 +54,7 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
             a.chrom = newchrom
             a.start_position = newstart
             a.end_position = newend
+            setattr(a, build_col) = '37'
             newline = ''
             for k in keys:
                 newline = newline + str(getattr(a, k)) + '\t'
@@ -67,6 +70,7 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
     session.query(table).filter(getattr(table.c, build_col) == '36').delete(synchronize_session=False)
     session.commit()
     
+   '''
     maf19 = open('maf19temp').readlines()
     for line in maf19[1:]:
         inputdic = {}
@@ -79,10 +83,13 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
                 i.execute(inputdic)
             except IndexError:
                 continue
-
+    ''' 
 
 build_col = 'ncbi_build'
 tablename = 'mutations_v1'
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 
-convert_hg18tohg19(db, tablename, build_col = build_col)
+#convert_hg18tohg19(db, tablename, build_col = build_col)
+db_importer.import_data('maf19temp.cor', 'mutations_v1', db)
+
+
