@@ -54,7 +54,7 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
             a.chrom = newchrom
             a.start_position = newstart
             a.end_position = newend
-            setattr(a, build_col) = '37'
+            setattr(a, build_col, '37')
             newline = ''
             for k in keys:
                 newline = newline + str(getattr(a, k)) + '\t'
