@@ -31,7 +31,7 @@ kg_table = Table('kg_lowcov', metadata,
 
 
 for filename in files:
-    print f
+    print filename
     csvfile = open(filename, 'r')
     reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = '\t')
     for row in reader:
@@ -40,4 +40,3 @@ for filename in files:
         table.insert(prefixes=['OR IGNORE']).values(**row).execute()
     session.commit()
 
-    
