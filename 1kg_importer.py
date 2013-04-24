@@ -21,6 +21,7 @@ Session = sessionmaker(db)
 session = Session()
 metadata = MetaData(db)
 
+headers = extract_header(files)
 
 key_columns = ['rsid']
 columns = map(lambda x: db_importer.headers.synonyms(x), headers)
