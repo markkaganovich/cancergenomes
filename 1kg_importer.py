@@ -7,8 +7,33 @@ from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 
 files = ['../1000GenomesData/CEU.lowcov.header', '../1000GenomesData/YRI.lowcov.header', '../1000GenomesData/CHBJPT.lowcov.header', '../1000GenomesData/YRI.trio.header', '../1000GenomesData/CEU.trio.header']
 
-db = create_engine('sqlite:///GENOTYPES.db', echo = True)
+def extract_header(files):
+    headers = []
+    for f in files:
+        l = open(f, 'r').readline().split('\t')
+        map(lambda x: headers.append(x), l)
+    headers = sorted(headers, key=lambda x: x.startswith('N'))
+    return list(set(headers))
 
-for f in files:
+db = create_engine('sqlite:///GENOTYPES.db', echo = True)
+Session = sessionmaker(db)
+session = Session()
+metadata = MetaData(db)
+
+
+key_columns = ['rsid']
+columns = map(lambda x: db_importer.headers.synonyms(x), headers)
+
+kg_table = Table('kg_lowcov', metadata, 
+    *(Column(rowname, String(), primary_key = db_importer.get_key_columns(rowname, key_columns)) for rowname in headers))
+
+
+for filename in files:
     print f
-    db_importer.import_data(filename = f, tablename = '1kg_lowcov_1.0', db = db)
+    csvfile = open(filename, 'r')
+    reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = '\t')
+    for row in reader:
+        if extra_columns is not None:
+            row.update(extra_columns)
+        table.insert(prefixes=['OR IGNORE']).values(**row).execute()
+    session.commit()

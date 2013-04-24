@@ -69,9 +69,6 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 
 	session.commit()
 
-	class Genotypes(object):
-		pass
-	mapper(Genotypes, table)
 
 
 
