@@ -39,3 +39,5 @@ for filename in files:
             row.update(extra_columns)
         table.insert(prefixes=['OR IGNORE']).values(**row).execute()
     session.commit()
+
+    
