@@ -5,6 +5,7 @@ import os
 import re
 from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
 from sqlalchemy.orm import sessionmaker
+import csv
 
 files = ['../1000GenomesData/CEU.lowcov.header', '../1000GenomesData/YRI.lowcov.header', '../1000GenomesData/CHBJPT.lowcov.header', '../1000GenomesData/YRI.trio.header', '../1000GenomesData/CEU.trio.header']
 
