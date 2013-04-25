@@ -36,8 +36,6 @@ for filename in files:
     csvfile = open(filename, 'r')
     reader = csv.DictReader(csvfile, fieldnames = columns, delimiter = '\t')
     for row in reader:
-        if extra_columns is not None:
-            row.update(extra_columns)
         table.insert(prefixes=['OR IGNORE']).values(**row).execute()
     session.commit()
 
