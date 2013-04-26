@@ -26,14 +26,13 @@ f = filter(lambda x: x.variant_classification in first_pass_mutations, e)
 def count_snps(results_list):
     snpcount = {}
     for x in results_list:
-        snp = x.chrom+':'+f.start_position 
+        snp = x.chrom+':'+x.start_position 
         if snp in snpcount.keys():
             snpcount[snp] = snpcount[snp] + 1
         else:
             snpcount[snp]= 0
-
     return snpcount
-    
+
 def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
     out = open(outputfile, 'w')
     snpcountout = open(snpcountfile, 'w')
