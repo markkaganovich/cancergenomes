@@ -21,7 +21,7 @@ session = Session()
 
 Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
-f = filter(lambda x: x.variant_classification in first_pass_mutations, e)
+f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
 def count_snps(results_list):
     snpcount = {}
