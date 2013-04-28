@@ -17,7 +17,7 @@ def extract_header(files):
     headers = sorted(headers, key=lambda x: x.startswith('N'))
     return list(set(headers))
 
-db = create_engine('sqlite:///GENOTYPES.db', echo = True)
+db = create_engine('sqlite:///GENOTYPES_v2.db', echo = True)
 Session = sessionmaker(db)
 session = Session()
 metadata = MetaData(db)
