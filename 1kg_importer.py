@@ -28,7 +28,7 @@ key_columns = ['rsid']
 columns = map(lambda x: db_importer.headers.synonyms(x), headers)
 
 kg_table = Table('kg_lowcov', metadata, 
-    *(Column(rowname, String(), primary_key = db_importer.get_key_columns(rowname, key_columns)) for rowname in headers))
+    *(Column(rowname, String(), primary_key = db_importer.get_key_columns(rowname, key_columns)) for rowname in columns))
 
 
 for filename in files:
