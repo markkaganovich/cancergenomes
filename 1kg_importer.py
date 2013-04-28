@@ -29,7 +29,8 @@ columns = map(lambda x: db_importer.headers.synonyms(x), headers)
 
 kg_table = Table('kg_lowcov', metadata, 
     *(Column(rowname, String(), primary_key = db_importer.get_key_columns(rowname, key_columns)) for rowname in columns))
-
+kg_table.create()
+session.commit()
 
 for filename in files:
     print filename
