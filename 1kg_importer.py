@@ -13,7 +13,7 @@ def extract_header(files):
     headers = []
     for f in files:
         l = open(f, 'r').readline().split('\t')
-        map(lambda x: headers.append(x), l)
+        map(lambda x: headers.append(x.strip('\n')), l)
     headers = sorted(headers, key=lambda x: x.startswith('N'))
     return list(set(headers))
 
