@@ -27,7 +27,7 @@ headers = extract_header(files)
 key_columns = ['rsid']
 columns = map(lambda x: db_importer.headers.synonyms(x), headers)
 
-kg_table = Table('kg_lowcov', metadata, 
+kg_table = Table('kg', metadata, 
     *(Column(rowname, String(), primary_key = db_importer.get_key_columns(rowname, key_columns)) for rowname in columns))
 kg_table.create()
 session.commit()
