@@ -23,14 +23,25 @@ Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
 f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
-def count_snps(results_list):
+snpcountfile = 'snpcount'
+
+if snpcountfile in os.listdir('./'):
+    snpcount = json.load(open(snpcountfile, 'r'))
+else:
+    snpcout = count_snps(f)
+
+
+
+def count_snps(results_list, outputfile = 'snpcount'):
     snpcount = {}
     for x in results_list:
         snp = x.chrom+':'+x.start_position 
         if snp in snpcount.keys():
             snpcount[snp] = snpcount[snp] + 1
         else:
-            snpcount[snp]= 0
+            snpcount[snp]= 1
+    out = open(outputfile, 'w')
+    json.dump(snpcount, out)
     return snpcount
 
 def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
