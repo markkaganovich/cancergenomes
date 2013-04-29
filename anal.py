@@ -25,12 +25,14 @@ f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
 def count_snps(results_list, outputfile = 'snpcount'):
     snpcount = {}
+    keys = set([])
     for x in results_list:
         snp = x.chrom+':'+x.start_position 
-        if snp in snpcount.keys():
+        if snp in keys:
             snpcount[snp] = snpcount[snp] + 1
         else:
             snpcount[snp]= 1
+            keys.add(snp)
     out = open(outputfile, 'w')
     json.dump(snpcount, out)
     return snpcount
@@ -40,19 +42,21 @@ snpcountfile = 'snpcount'
 if snpcountfile in os.listdir('./'):
     snpcount = json.load(open(snpcountfile, 'r'))
 else:
-    snpcout = count_snps(f)
+    snpcount = count_snps(f)
 
 #filter snps by their frequency. only use those that appear > 
 
-
+print "about to make matrix...."
 
 
 sample_matrix = {}
 mutations = list(set(map(lambda x: x.chrom + ':' + x.start_position, f)))
+matrix_samples = set([])
 for x in results_list:
     sample = x.Tumor_Sample_Barcode
+    print sample_matrix
     snp = x.chrom + ':' + x.start_position
-    if sample in sample_matrix.keys():
+    if sample in matrix_samples:
         if snp in sample_matrix[sample]:
             sample_matrix[sample][snp] = sample_matrix[sample][snp] + 1
         else:
@@ -60,8 +64,9 @@ for x in results_list:
     else:
         sample_matrix[sample] = {}
         sample_matrix[sample][snp] = 1
+        matrix_samples.add(sample)
 
-out = open('matrix', 'w')
+out = open('matrix2', 'w')
 json.dump(sample_matrix, out)
 
 
