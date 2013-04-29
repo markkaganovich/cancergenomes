@@ -23,16 +23,6 @@ Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
 f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
-#get snp count
-snpcountfile = 'snpcount'
-if snpcountfile in os.listdir('./'):
-    snpcount = json.load(open(snpcountfile, 'r'))
-else:
-    snpcout = count_snps(f)
-
-#filter snps by their frequency. only use those that appear > 
-
-
 def count_snps(results_list, outputfile = 'snpcount'):
     snpcount = {}
     for x in results_list:
@@ -44,6 +34,18 @@ def count_snps(results_list, outputfile = 'snpcount'):
     out = open(outputfile, 'w')
     json.dump(snpcount, out)
     return snpcount
+
+#get snp count
+snpcountfile = 'snpcount'
+if snpcountfile in os.listdir('./'):
+    snpcount = json.load(open(snpcountfile, 'r'))
+else:
+    snpcout = count_snps(f)
+
+#filter snps by their frequency. only use those that appear > 
+
+
+
 
 sample_matrix = {}
 mutations = list(set(map(lambda x: x.chrom + ':' + x.start_position, f)))
