@@ -23,13 +23,14 @@ Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
 f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
+#get snp count
 snpcountfile = 'snpcount'
-
 if snpcountfile in os.listdir('./'):
     snpcount = json.load(open(snpcountfile, 'r'))
 else:
     snpcout = count_snps(f)
 
+#filter snps by their frequency. only use those that appear > 
 
 
 def count_snps(results_list, outputfile = 'snpcount'):
@@ -43,6 +44,24 @@ def count_snps(results_list, outputfile = 'snpcount'):
     out = open(outputfile, 'w')
     json.dump(snpcount, out)
     return snpcount
+
+sample_matrix = {}
+mutations = list(set(map(lambda x: x.chrom + ':' + x.start_position, f)))
+for x in results_list:
+    sample = x.Tumor_Sample_Barcode
+    snp = x.chrom + ':' + x.start_position
+    if sample in sample_matrix.keys():
+        if snp in sample_matrix[sample]:
+            sample_matrix[sample][snp] = sample_matrix[sample][snp] + 1
+        else:
+            sample_matrix[sample][snp] = 1
+    else:
+        sample_matrix[sample] = {}
+        sample_matrix[sample][snp] = 1
+
+out = open('matrix', 'w')
+json.dump(sample_matrix, out)
+
 
 def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
     out = open(outputfile, 'w')
