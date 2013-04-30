@@ -47,14 +47,16 @@ else:
     snpcount = count_snps(rows)
 
 def explore_snp_counts(snpcount):
-    a = sorted(snpcout.iteritems(), key = operator.itemgetter(1), reverse=True)
+    a = sorted(snpcount.iteritems(), key = operator.itemgetter(1), reverse=True)
     counts = map(lambda x: x[1], a)
     snps = map(lambda x: x[0], a)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ind = list(range(0, len(counts)))
     width = .1
+    print "making bar"
     bar = ax.bar(ind, counts, width)
+    print "saving ..."
     plt.savefig('counts.jpeg')
 
 #filter snps by their frequency. only use those that appear > .....
