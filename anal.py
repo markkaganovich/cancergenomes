@@ -48,12 +48,12 @@ else:
 
 def explore_snp_counts(snpcount):
     a = sorted(snpcount.iteritems(), key = operator.itemgetter(1), reverse=True)
-    counts = map(lambda x: x[1], a)
-    snps = map(lambda x: x[0], a)
+    counts = map(lambda x: x[1], a)[0:200000]
+    snps = map(lambda x: x[0], a)[0:200000]
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ind = list(range(0, len(counts)))
-    width = .1
+    width = .2
     print "making bar"
     bar = ax.bar(ind, counts, width)
     print "saving ..."
