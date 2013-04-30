@@ -48,14 +48,14 @@ else:
 
 def explore_snp_counts(snpcount):
     a = sorted(snpcount.iteritems(), key = operator.itemgetter(1), reverse=True)
-    counts = map(lambda x: x[1], a)[0:100000]
-    snps = map(lambda x: x[0], a)[0:100000]
+    counts = map(lambda x: x[1], a)[0:50000]
+    snps = map(lambda x: x[0], a)[0:50000]
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ind = list(range(0, len(counts)))
     width = .2
     print "making bar"
-    bar = ax.bar(ind, counts, width)
+    bar = ax.bar(ind, counts, width, color="blue")
     print "saving ..."
     plt.savefig('counts.png')
 
@@ -89,6 +89,23 @@ def get_matrix(results_list, outputfile = 'matrix'):
 if matrixfile not in os.listdir('./'):
      get_matrix(rows, outputfile = matrixfile)
 sample_matrix = json.load(open(matrixfile, 'r'))
+
+def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
+    snp_sample = {}
+    matrix_samples = set([])
+    for x in results_list:
+        sample = x.tumor_sample_barcode
+        print sample
+        snp = x.chrom + ':' + x.start_position
+        if snp not in matrix_samples:
+            snp_sample[snp] = []
+            matrix_samples.add(snp)
+        if sample not in snp_sample[snp]:
+            snp_sample[snp].append(sample)
+    out = open(outputfile, 'w')
+    json.dump(snp_sample, out)
+        
+
 
 snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
 
