@@ -9,6 +9,8 @@ import commands
 import os
 import csv 
 import headers
+import operator
+import matplotlib.pyplot as plt
 
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -21,7 +23,7 @@ session = Session()
 
 Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
-f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
+rows = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
 def count_snps(results_list, outputfile = 'snpcount'):
     snpcount = {}
@@ -42,32 +44,51 @@ snpcountfile = 'snpcount'
 if snpcountfile in os.listdir('./'):
     snpcount = json.load(open(snpcountfile, 'r'))
 else:
-    snpcount = count_snps(f)
+    snpcount = count_snps(rows)
 
-#filter snps by their frequency. only use those that appear > 
+def explore_snp_counts(snpcount):
+    a = sorted(snpcout.iteritems(), key = operator.itemgetter(1), reverse=True)
+    counts = map(lambda x: x[1], a)
+    snps = map(lambda x: x[0], a)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ind = list(range(0, len(counts)))
+    width = .1
+    bar = ax.bar(ind, counts, width)
+    plt.savefig('counts.jpeg')
+
+#filter snps by their frequency. only use those that appear > .....
 
 print "about to make matrix...."
 
 
-sample_matrix = {}
-mutations = list(set(map(lambda x: x.chrom + ':' + x.start_position, f)))
-matrix_samples = set([])
-for x in results_list:
-    sample = x.Tumor_Sample_Barcode
-    print sample_matrix
-    snp = x.chrom + ':' + x.start_position
-    if sample in matrix_samples:
-        if snp in sample_matrix[sample]:
-            sample_matrix[sample][snp] = sample_matrix[sample][snp] + 1
-        else:
-            sample_matrix[sample][snp] = 1
-    else:
-        sample_matrix[sample] = {}
-        sample_matrix[sample][snp] = 1
-        matrix_samples.add(sample)
+matrixfile = 'matrix'
 
-out = open('matrix2', 'w')
-json.dump(sample_matrix, out)
+def get_matrix(results_list, outputfile = 'matrix'):
+    sample_matrix = {}
+    #mutations = list(set(map(lambda x: x.chrom + ':' + x.start_position, f)))
+    matrix_samples = set([])
+    for x in results_list:
+        sample = x.tumor_sample_barcode
+        print sample
+        snp = x.chrom + ':' + x.start_position
+        if sample in matrix_samples:
+            if snp in sample_matrix[sample]:
+                sample_matrix[sample][snp] = sample_matrix[sample][snp] + 1
+            else:
+                sample_matrix[sample][snp] = 1
+        else:
+            sample_matrix[sample] = {}
+            sample_matrix[sample][snp] = 1
+            matrix_samples.add(sample)
+    out = open(outputfile, 'w')
+    json.dump(sample_matrix, out)
+
+if matrixfile not in os.listdir('./'):
+     get_matrix(rows, outputfile = matrixfile)
+sample_matrix = json.load(open(matrixfile, 'r'))
+
+snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
 
 
 def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
