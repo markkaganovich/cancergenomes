@@ -46,18 +46,44 @@ if snpcountfile in os.listdir('./'):
 else:
     snpcount = count_snps(rows)
 
-def explore_snp_counts(snpcount):
+def count_genes(rows, outputfile = 'gene_snp_count'):
+    gene_snp_count = {}
+    for r in rows:
+        gene = r.hugo_symbol
+        try:
+            gene_snp_count[gene] = gene_snp_count[gene] + 1
+        except KeyError:
+            gene_snp_count[gene] = 1
+    out = open(outputfile, 'w')
+    json.dump(gene_snp_count, out)
+    return gene_snp_count
+
+#get gene_snp count
+genecountfile = 'gene_snp_count'
+if genecountfile in os.listdir('./'):
+    gene_snp_count = json.load(open(genecountfile, 'r'))
+else:
+    gene_snp_count = count_genes(rows)
+
+def explore_snp_counts(snpcount, outputfile = 'counts.png'):
     a = sorted(snpcount.iteritems(), key = operator.itemgetter(1), reverse=True)
-    counts = map(lambda x: x[1], a)[0:50000]
-    snps = map(lambda x: x[0], a)[0:50000]
+    counts = map(lambda x: x[1], a)
+    snps = map(lambda x: x[0], a)
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ind = list(range(0, len(counts)))
     width = .2
     print "making bar"
-    bar = ax.bar(ind, counts, width, color="blue")
+    bar = ax.bar(ind, counts, width, color="r")
     print "saving ..."
-    plt.savefig('counts.png')
+    plt.savefig(outputfile)
+
+def count_types(rows):
+    types = list(set(map(lambda x: x.cancer_type, rows)))
+    for t in types:
+        n = filter(lambda x: x.cancer_type == t, rows)
+        samples = map(lambda x: x.tumor_sample_barcode, n)
+        print t + ':' + str(len(set(samples)))
 
 #filter snps by their frequency. only use those that appear > .....
 
@@ -132,7 +158,13 @@ if gene_sample_file not in os.listdir('./'):
     get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
 gene_sample = json.load(open(gene_sample_file, 'r'))
 
-genes = gene_sample.keys()[0:1000]
+genes = gene_sample.keys()
+
+#plot gene_samples
+gene_sample_count = {}
+for g in genes:
+    gene_sample_count[g] = gene_sample[g].__len__()
+explore_snp_counts(gene_sample_count, 'gene_sample_counts.png')
 
 genecount = {}
 for g in genes:
@@ -154,38 +186,3 @@ for i in genes:
 
 
 
-
-
-def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
-    out = open(outputfile, 'w')
-    snpcountout = open(snpcountfile, 'w')
-
-    sam = session.query(Mutations).all()
-    a = list(set(filter(lambda x: x.Variant_Classification != 'Silent', sam)))
-    allsnps = list(set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), a)))
-    samples = list(set(map(lambda x: x.Tumor_Sample_Barcode, a)))
-
-    line = 'SAMPLE,'
-    snpcount = {}
-    for snp in allsnps:
-        line = line + snp + ','
-        snpcount[snp] = 0
-    out.write(line.strip(',')+'\n')
-
-    for s in samples:
-        try:
-            out.write(s + ',')
-            rows = filter(lambda x: x.Tumor_Sample_Barcode == s, a)
-            rowsnps = set(map(lambda x: str(x.Chromosome) + ':' + str(x.Start_Position), rows))
-            snps = ''
-            for snp in allsnps:
-                if snp in rowsnps:
-                    snps = snps + '1' + ','
-                    snpcount[snp] = snpcount[snp] + 1
-                else:
-                    snps = snps + '0' + ','
-                    snpcount[snp] = snpcount[snp] + 0
-            out.write(snps.strip(',')+'\n')
-        except:
-            continue
-    json.dump(snpcount, snpcountout)
