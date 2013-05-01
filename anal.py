@@ -105,9 +105,29 @@ def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
     out = open(outputfile, 'w')
     json.dump(snp_sample, out)
         
-
+snp_sample_file = 'snp_sample'        
+if snp_sample_file not in os.listdir('./'):
+    get_snp_sample_matrix(rows, outputfile = snp_sample_file)
+snp_sample = json.load(open(snp_sample_file, 'r'))
 
 snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
+
+def get_gene_sample(snp_sample, snp_gene, outputfile = 'gene_sample'):
+    gene_sample = {}
+    snps = snp_sample.keys()
+    for s in snps:
+        gene = snp_gene[s]
+        try:
+            gene_sample[gene].append(s)
+        except KeyError:
+            gene_sample[gene] = [snp_sample[s]]
+    out = open(outputfile, 'w')
+    json.dump(gene_sample, out)
+    return gene_sample
+
+
+
+
 
 
 def make_matrix(outputfile = 'genotype_matrix.temp', snpcountfile = 'snpcount.temp'):
