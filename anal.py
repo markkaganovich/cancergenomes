@@ -132,17 +132,24 @@ if gene_sample_file not in os.listdir('./'):
     get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
 gene_sample = json.load(open(gene_sample_file, 'r'))
 
-genes = gene_sample.keys()[0:100]
+genes = gene_sample.keys()[0:1000]
 
 genecount = {}
 for g in genes:
     genecount[g] = len(gene_sample[g])
 
+def convert_to_set(dic):
+    for k in dic.keys():
+        dic[k] = set(dic[k])
+    return dic
+
+gene_sample_set = convert_to_set(gene_sample)
+
 co_occur = {}
 for i in genes:
     co_occur[i] = {}
     for j in genes:
-        co_occur[i][j] = gene_sample[i].intersect(gene_sample[j]).__len__()
+        co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
 
 
 
