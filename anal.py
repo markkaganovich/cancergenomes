@@ -118,12 +118,31 @@ def get_gene_sample(snp_sample, snp_gene, outputfile = 'gene_sample'):
     for s in snps:
         gene = snp_gene[s]
         try:
-            gene_sample[gene].append(s)
+            gene_sample[gene].extend(snp_sample[s])
         except KeyError:
-            gene_sample[gene] = [snp_sample[s]]
+            gene_sample[gene] = snp_sample[s]
+    for k in gene_sample.keys():
+        gene_sample[k] = list(set(gene_sample[k]))
     out = open(outputfile, 'w')
     json.dump(gene_sample, out)
     return gene_sample
+
+gene_sample_file = 'gene_sample'
+if gene_sample_file not in os.listdir('./'):
+    get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
+gene_sample = json.load(open(gene_sample_file, 'r'))
+
+genes = gene_sample.keys()[0:100]
+
+genecount = {}
+for g in genes:
+    genecount[g] = len(gene_sample[g])
+
+co_occur = {}
+for i in genes:
+    co_occur[i] = {}
+    for j in genes:
+        co_occur[i][j] = gene_sample[i].intersect(gene_sample[j]).__len__()
 
 
 
