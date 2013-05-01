@@ -161,10 +161,12 @@ gene_sample = json.load(open(gene_sample_file, 'r'))
 genes = gene_sample.keys()
 
 #plot gene_samples
+'''
 gene_sample_count = {}
 for g in genes:
     gene_sample_count[g] = gene_sample[g].__len__()
 explore_snp_counts(gene_sample_count, 'gene_sample_counts.png')
+'''
 
 genecount = {}
 for g in genes:
@@ -177,11 +179,17 @@ def convert_to_set(dic):
 
 gene_sample_set = convert_to_set(gene_sample)
 
-co_occur = {}
-for i in genes:
-    co_occur[i] = {}
-    for j in genes:
-        co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
+def run_co_ooccur(gene_sample_set, outputfile = 'co_occur'):
+    co_occur = {}
+    for i in genes:
+        co_occur[i] = {}
+        for j in genes:
+            co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
+    json.dump(co_occur, open(outputfile, 'w'))
+    return co_occur
+    
+run_co_ooccur(gene_sample_set)
+
 
 
 
