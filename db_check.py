@@ -32,3 +32,5 @@ for r in rows1:
     if obj not in rows2_unique:
         where_at.add(r)
 
+json.dump(list(where_at), open('db_differences', 'w'))
+
