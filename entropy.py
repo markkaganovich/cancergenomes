@@ -48,21 +48,22 @@ genes = gene_snp.keys()
 entropy = {}
 for g in genes:
     v = counts[g].values()
-    entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(float(x)/sum(v)), v))
-
+    entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(x), v))
+'''
 entropy_normalized = {}
 for g in genes:
     if sum(counts[g].values()) > 30:
-        entropy_normalized[g] = entropy[g] / len(counts[g].values())
-
+        entropy_normalized[g] = entropy[g] / sum(counts[g].values())
+'''
 hack = {}
 for g in genes:
     v = np.array(counts[g].values())
-    hack[g] = np.dot(v,v)-float(sum(v))
+    hack[g] = np.dot(v,v)/float(sum(v))
 
-a1 = sorted(entropy_normalized.iteritems(), key = operator.itemgetter(1), reverse=True)
-ents1 = map(lambda x: x[1], a)
-d1 = map(lambda x: x[0], a)
+
+a1 = sorted(entropy.iteritems(), key = operator.itemgetter(1))
+ents1 = map(lambda x: x[1], a1)
+d1 = map(lambda x: x[0], a1)
 '''
 fig = plt.figure()
 ax = fig.add_subplot(111)
