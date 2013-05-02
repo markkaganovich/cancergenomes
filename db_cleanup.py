@@ -32,8 +32,7 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
     for l in lines:
         if not l.startswith('#'):
             snppos = l.split('\t')[0] + ':' + l.split('\t')[1]
-            unmapped.append(snppos)
-    
+            unmapped.append(snppos)  
     hg19 = open('hg19.bed')
     maf19temp = open('maf19temp', 'w')
     keys = all36[0].keys()
@@ -59,16 +58,13 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
             for k in keys:
                 newline = newline + str(getattr(a, k)) + '\t'
             maf19temp.write(newline.strip('\t') + '\n')
-
-            #newa = session.query(mutations).filter_by(Tumor_Sample_Barcode = a.Tumor_Sample_Barcode, Start_Position = a.Start_Position)
-            #newa.update({"Chromosome": newchrom, "Start_Position": newstart, "End_Position": newend, "NCBI_Build" : 37}, synchronize_session=False)
         else:
             print snppos
             continue
     maf19temp.close()
 
-    session.query(table).filter(getattr(table.c, build_col) == '36').delete(synchronize_session=False)
-    session.commit()
+    #session.query(table).filter(getattr(table.c, build_col) == '36').delete(synchronize_session=False)
+    #session.commit()
     
 '''
     maf19 = open('maf19temp').readlines()
