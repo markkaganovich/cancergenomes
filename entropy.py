@@ -12,7 +12,7 @@ import headers
 import operator
 import matplotlib.pyplot as plt
 from collections import Counter
-import numpy
+import numpy as np
 
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -48,11 +48,34 @@ genes = gene_snp.keys()
 entropy = {}
 for g in genes:
     v = counts[g].values()
-    entropy[g] = sum(map(lambda x: numpy.log(x) * x/sum(v), v))
+    entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(float(x)/sum(v)), v))
 
 entropy_normalized = {}
 for g in genes:
-    entropy_normalized[g] = entropy[g] / sum(counts[g])
+    if sum(counts[g].values()) > 35:
+        entropy_normalized[g] = entropy[g] / len(counts[g].values())
+
+hack = {}
+for g in genes:
+    v = np.array(counts[g].values())
+    hack[g] = np.dot(v,v)/float(sum(v))
+
+a = sorted(entropy.iteritems(), key = operator.itemgetter(1), reverse=True)
+ents = map(lambda x: x[1], a)
+d = map(lambda x: x[0], a)
+'''
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ind = list(range(0, len(ents)))
+width = .2
+print "making bar"
+bar = ax.bar(ind, counts, width, color="r")
+print "saving ..."
+plt.savefig('entropy_normalize.png')
+'''
+
+
+
 
 
 
