@@ -11,6 +11,7 @@ db = create_engine('sqlite:///tcga_test.db', echo = False)
 
 directory = 'mark/cancerdata/'
 filename = 'COLON.illumina.maf'
+cancer = 'COLON'
 f = directory + filename
 
 primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
