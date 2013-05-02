@@ -12,6 +12,7 @@ import headers
 import operator
 import matplotlib.pyplot as plt
 from collections import Counter
+import numpy
 
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -32,12 +33,26 @@ def make_gene_snp(rows):
         gene = r.hugo_symbol
         snp = r.chrom + ':' + r.start_position
         try:
-            gene_snp[gene] = [snp]
+            gene_snp[gene].append(snp)
         except KeyError:
-            gene_snp.append(snp)
+            gene_snp[gene] = [snp]
     return gene_snp
 
+gene_snp = make_gene_snp(rows)
+counts = {}
 for g in gene_snp.keys():
     counts[g] = Counter(gene_snp[g])
-    
+
+# caculate entropty
+genes = gene_snp.keys()
+entropy = {}
+for g in genes:
+    v = counts[g].values()
+    entropy[g] = sum(map(lambda x: numpy.log(x) * x/sum(v), v))
+
+entropy_normalized = {}
+for g in genes:
+    entropy_normalized[g] = entropy[g] / sum(counts[g])
+
+
 
