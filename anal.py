@@ -190,7 +190,7 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
             co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
-    np.save(co, open(outputfile, 'w'))
+    np.save(open(outputfile, 'w'), co)
     return co
 '''
 if 'co_occur' in os.listdir('./'):
