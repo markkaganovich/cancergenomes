@@ -11,6 +11,7 @@ import csv
 import headers
 import operator
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
