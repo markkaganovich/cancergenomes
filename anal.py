@@ -189,7 +189,7 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur'):
     return co_occur
 
 if 'co_occur' in os.listdir('./'):
-    co_occur = json.load('co_occur')
+    co_occur = json.load(open('co_occur'))
 run_co_occur(gene_sample_set)
 
 prob = {}
