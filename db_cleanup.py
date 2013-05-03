@@ -36,9 +36,10 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
     hg19 = open('hg19.bed')
     maf19temp = open('maf19temp', 'w')
     keys = all36[0].keys()
+    headerline = ''
     for k in keys:
-        maf19temp.write(k + '\t')
-    maf19temp.write('\n')   
+        headerline = headerline+k+'\t'
+    maf19temp.write(headerline.strip('\t')+'\n')   
 
     for a in all36:
         snppos = 'chr' + str(a.chrom) + ':' + str(a.start_position)
@@ -88,4 +89,8 @@ db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 #convert_hg18tohg19(db, tablename, build_col = build_col)
 db_importer.import_data('maf19.temp', 'mutations_v1', db)
 
+
+primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
+add_columns = {'cancer_type': 'COLON', 'filename' : 'COLON.illumina.maf'}
+db_importer.import_data('maf19temp', 'mutations_colon', db, extra_columns = add_columns, key_columns = primary_keys)
 '''
