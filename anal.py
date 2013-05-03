@@ -191,10 +191,11 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'))
     return co
-
+'''
 if 'co_occur' in os.listdir('./'):
     co_occur = json.load(open('co_occur'))
 run_co_occur(gene_sample_set)
+'''
 
 prob = {}
 for g in genes:
