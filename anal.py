@@ -179,7 +179,7 @@ def convert_to_set(dic):
 
 gene_sample_set = convert_to_set(gene_sample)
 
-def run_co_ooccur(gene_sample_set, outputfile = 'co_occur'):
+def run_co_occur(gene_sample_set, outputfile = 'co_occur'):
     co_occur = {}
     for i in genes:
         co_occur[i] = {}
@@ -187,8 +187,24 @@ def run_co_ooccur(gene_sample_set, outputfile = 'co_occur'):
             co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
     json.dump(co_occur, open(outputfile, 'w'))
     return co_occur
+
+if 'co_occur' in os.listdir('./'):
+    co_occur = json.load('co_occur')
+run_co_occur(gene_sample_set)
+
+prob = {}
+for g in genes:
+    prob = gene_sample_set[g].__len__()
+json.dump(open('Prob_genes', 'w'))
+
+# translate co_occur matrix into conditional probabilityes
+cond_co_occur = {}
+for i in genes:
+    for j in genes: 
+        if i not in cond_co_occur.keys():
+            cond_co_occur[i] = {}
+        cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
     
-run_co_ooccur(gene_sample_set)
 
 
 
