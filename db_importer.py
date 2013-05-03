@@ -62,6 +62,8 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 
 	table = make_table(tablename, db, columns, key_columns)
 
+	print columns
+	
 	for row in reader:
 		if extra_columns is not None:
 			row.update(extra_columns)
