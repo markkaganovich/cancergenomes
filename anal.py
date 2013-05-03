@@ -183,32 +183,35 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     genes = gene_sample_set.keys()
     co = np.identity(len(genes))
     #co_occur = {}
-    for i in genes:
+    for i, gi in enumerate(genes):
         #co_occur[i] = {}
-        for j in genes:
+        for j, gj in enumerate(genes):
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
-            co[i,j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
+            co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
-    np.save(open(outputfile, 'w'))
+    np.save(co, open(outputfile, 'w'))
     return co
 '''
 if 'co_occur' in os.listdir('./'):
     co_occur = json.load(open('co_occur'))
-run_co_occur(gene_sample_set)
 '''
+run_co_occur(gene_sample_set)
+
 
 prob = {}
 for g in genes:
     prob = gene_sample_set[g].__len__()
-json.dump(open('Prob_genes', 'w'))
+json.dump(prob, open('Prob_genes', 'w'))
 
 # translate co_occur matrix into conditional probabilityes
-cond_co_occur = {}
-for i in genes:
-    for j in genes: 
-        if i not in cond_co_occur.keys():
-            cond_co_occur[i] = {}
-        cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
+cond_co_occur = np.identity(len(genes))
+for i, gi in enumerate(genes):
+    for j, gj in enumerate(genes): 
+        cond_co_occur[i][j] = co[i][j] / float(prob[gi])
+        
+        #if i not in cond_co_occur.keys():
+        #    cond_co_occur[i] = {}
+        #cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
     
 
 
