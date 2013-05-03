@@ -80,7 +80,7 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
             except IndexError:
                 continue
 ''' 
-
+'''
 build_col = 'ncbi_build'
 tablename = 'mutations_v1'
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -88,4 +88,4 @@ db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 #convert_hg18tohg19(db, tablename, build_col = build_col)
 db_importer.import_data('maf19.temp', 'mutations_v1', db)
 
-
+'''
