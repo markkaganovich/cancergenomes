@@ -192,23 +192,27 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'), co)
     return co
-'''
-if 'co_occur' in os.listdir('./'):
-    co_occur = json.load(open('co_occur'))
-'''
-run_co_occur(gene_sample_set)
 
+if 'co_occur_np' in os.listdir('./'):
+    co = np.load(open('co_occur_np'))
+else:
+    co = run_co_occur(gene_sample_set)
 
+'''
 prob = {}
 for g in genes:
-    prob = gene_sample_set[g].__len__()
+    prob[g] = gene_sample_set[g].__len__()
 json.dump(prob, open('Prob_genes', 'w'))
+'''
+prob = json.load(open('Prob_genes'))
 
 # translate co_occur matrix into conditional probabilityes
 cond_co_occur = np.identity(len(genes))
 for i, gi in enumerate(genes):
     for j, gj in enumerate(genes): 
-        cond_co_occur[i][j] = co[i][j] / float(prob[gi])
+        cond_co_occur[i,j] = co[i,j] / float(prob[gi])
+
+np.save(open('cond_co_occur', 'w'), cond_co_occur)
         
         #if i not in cond_co_occur.keys():
         #    cond_co_occur[i] = {}
