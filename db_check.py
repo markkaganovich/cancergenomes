@@ -28,9 +28,9 @@ rows2 = map(lambda x: x, m2)
 rows2_unique = set(map(lambda x: x.tumor_sample_barcode + ':' + x.chrom + ':' + x.start_position, rows2 ))
 where_at = set([])
 for r in rows1:
-    obj = r.Tumor_Sample_Barcode +':'+r.Chrom+':'+str(r.start_position)
+    obj = r.Tumor_Sample_Barcode +':'+r.Chromosome +':'+str(r.Start_Position)
     if obj not in rows2_unique:
-        where_at.add(r)
+        where_at.add(obj)
 
 json.dump(list(where_at), open('db_differences', 'w'))
 

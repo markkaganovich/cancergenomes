@@ -7,7 +7,7 @@ import re
 import headers
 import db_importer
 
-db = create_engine('sqlite:///tcga_test.db', echo = False)
+db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 
 directory = 'mark/cancerdata/'
 filename = 'COLON.illumina.maf'
