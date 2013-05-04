@@ -89,8 +89,11 @@ db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 #convert_hg18tohg19(db, tablename, build_col = build_col)
 db_importer.import_data('maf19.temp', 'mutations_v1', db)
 
-
+'''
 primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
 add_columns = {'cancer_type': 'COLON', 'filename' : 'COLON.illumina.maf'}
+
+db = create_engine('sqlite:///tcga_somatic.db', echo = False)
+convert_hg18tohg19(db, 'mutations_v1')
 db_importer.import_data('maf19temp', 'mutations_colon', db, extra_columns = add_columns, key_columns = primary_keys)
-'''
+
