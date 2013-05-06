@@ -10,8 +10,8 @@ import db_importer
 db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 
 directory = 'mark/cancerdata/'
-filename = 'OV.braod.mit.edu_Illumina.maf'
-cancer = 'OV'
+filename = 'genome.wustl.edu_BRCA.IlluminaGA_DNASeq.Level_2.3.2.0.somatic.maf'
+cancer = 'BRCA'
 f = directory + filename
 
 primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
