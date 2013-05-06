@@ -10,7 +10,7 @@ import db_importer
 db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 
 directory = 'mark/cancerdata/'
-filename = 'OV.wustl.edu_Illumina.maf'
+filename = 'OV.braod.mit.edu_Illumina.maf '
 cancer = 'OV'
 f = directory + filename
 

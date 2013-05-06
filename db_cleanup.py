@@ -13,20 +13,17 @@ import db_importer
 
 def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/home/mkagan/liftover/', chainfilename = 'hg18tohg19.over.chain'):
     db.dialect.get_table_names(db.connect())
-
     Session = sessionmaker(db)
     session = Session()
     metadata = MetaData(db)
     table = Table(tablename, metadata, autoload = True)
-   
     all36 = session.query(table).filter(getattr(table.c, build_col) == '36').all()
-
+    print len(all36)
     chainfile = liftoverdir+chainfilename
     bed18 = open('hg18.bed', 'w')
     for a in all36:
         bed18.write('chr'+str(a.chrom) + '\t' + str(a.start_position) + '\t' + str(int(a.end_position)+1) + '\n')
     commands.getstatusoutput("%s hg18.bed %s hg19.bed unmapped" % (liftoverdir+'liftOver', chainfile))
-
     unmapped = []
     lines = open('unmapped').readlines()
     for l in lines:
@@ -40,7 +37,6 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
     for k in keys:
         headerline = headerline+k+'\t'
     maf19temp.write(headerline.strip('\t')+'\n')   
-
     for a in all36:
         snppos = 'chr' + str(a.chrom) + ':' + str(a.start_position)
         if snppos not in unmapped:
@@ -91,9 +87,9 @@ db_importer.import_data('maf19.temp', 'mutations_v1', db)
 
 '''
 primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
-add_columns = {'cancer_type': 'COLON', 'filename' : 'COLON.illumina.maf'}
+add_columns = {'cancer_type': 'OV', 'filename' : 'OV_wustl'}
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
-convert_hg18tohg19(db, 'mutations_colon')
+convert_hg18tohg19(db, 'mutations_OV')
 db_importer.import_data('maf19temp', 'mutations_v1', db, extra_columns = add_columns, key_columns = primary_keys)
 
