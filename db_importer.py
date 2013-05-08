@@ -66,6 +66,7 @@ def import_data(filename = 'testheader2', tablename = None, db = None, extra_col
 
 	for row in reader:
 		print row
+		print row.values()
 		if extra_columns is not None:
 			row.update(extra_columns)
 		table.insert(prefixes=['OR IGNORE']).values(**row).execute()
