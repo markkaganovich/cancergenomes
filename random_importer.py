@@ -10,7 +10,7 @@ import db_importer
 db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 
 directory = 'mark/cancerdata/'
-filename = 'knownGene_join'
+filename = directory +'knownGene_join'
 #cancer = 'BRCA'
 #f = directory + filename
 
