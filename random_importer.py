@@ -17,4 +17,4 @@ filename = directory +'knownGene_join'
 #primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
 primary_keys = ['hg19.knownGene.name']
 
-db_importer.import_data(filename = filename, tablename = 'knownGene', db = db, key_columns = primary_keys)
+db_importer.import_data(filename = filename, tablename = 'knownGene_join', db = db, key_columns = primary_keys)
