@@ -18,13 +18,11 @@ def find_fieldnames(infile, not_header_flag = None):
 	delim = dialect.delimiter
 	fieldnames = h.split(delim)
 
-	clean_fieldnames = []
 	for f in fieldnames:
 		if f.startswith('#'):
-			clean_fieldnames.append(f[1:])
+			f = f[1:]
 
-
-	return clean_fieldnames, delim
+	return fieldnames, delim
 
 
 def synonyms(fieldname):
