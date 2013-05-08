@@ -18,9 +18,9 @@ def find_fieldnames(infile, not_header_flag = None):
 	delim = dialect.delimiter
 	fieldnames = h.split(delim)
 
-	for f in fieldnames:
-		if f.startswith('#'):
-			f = f[1:]
+	for f in range(0, len(fieldnames)):
+		if fieldnames[f].startswith('#'):
+			fieldnames[f] = fieldnames[f][1:]
 
 	return fieldnames, delim
 
