@@ -50,7 +50,7 @@ entropy = {}
 for g in genes:
     v = counts[g].values()
     try:
-        entropy[g] = -1 * sum(map(lambda x: (float(x)/len(gene_sequences[g])) * np.log(float(x)/len(gene_sequences[g])), v))
+        entropy[g] = -1 * sum(map(lambda x: (float(x)/len(v)) * np.log(float(x)), v))/len(gene_sequences[g])
     except KeyError:
         continue
 '''
@@ -89,3 +89,7 @@ distances = {}
 for g in genes:
     distances[g] = r_mut.index(g) - d.index(g) 
 e = sorted(distances.iteritems(), key = operator.itemgetter(1), reverse=True)
+
+
+def entr(v):
+    return sum(map(lambda x: (float(x)/1000) * np.log(float(x)/1000), v))
