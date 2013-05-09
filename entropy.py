@@ -50,9 +50,12 @@ entropy = {}
 for g in genes:
     v = counts[g].values()
     try:
-        entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(float(x)/sum(v)), v))* float(len(v))/len(gene_sequences[g])*2
+        entropy[g] = -1 * sum(map(lambda x: x * float(len(v))/len(gene_sequences[g]) * np.log(x* (float(len(v))/len(gene_sequences[g]))), v))
+        #entropy[g] = -1 * float(sum(map(lambda x: np.log(x), v))) / (len(gene_sequences[g])*2) 
     except KeyError:
         continue
+
+
 '''
 entropy_normalized = {}
 for g in genes:
@@ -60,10 +63,15 @@ for g in genes:
         entropy_normalized[g] = entropy[g] / sum(counts[g].values())
 '''
 hack = {}
+#hack2 = {}
+keys = set(gene_sequences.keys())
 for g in genes:
-    v = np.array(counts[g].values())
-    hack[g] = np.dot(v,v)/float(sum(v))
-
+    l = counts[g].values()
+    if g in keys:
+    #    v2 = map(lambda x: x * float(len(l))/len(gene_sequences[g]), l)
+    #    hack2[g] = np.dot(v2 , v2)
+        v = np.array(counts[g].values())
+        hack[g] = np.dot(v,v)/float(sum(v))/len(gene_sequences[g])
 
 a1 = sorted(entropy.iteritems(), key = operator.itemgetter(1))
 ents1 = map(lambda x: x[1], a1)
@@ -79,7 +87,7 @@ print "saving ..."
 plt.savefig('hack.png')
 '''
 
-a = sorted(hack.iteritems(), key = operator.itemgetter(1), reverse=True)
+a = sorted(hack2.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
 
