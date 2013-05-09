@@ -44,11 +44,12 @@ for g in gene_snp.keys():
     counts[g] = Counter(gene_snp[g])
 
 # caculate entropty
+gene_sequences = json.load(open('gene_sequences'))
 genes = gene_snp.keys()
 entropy = {}
 for g in genes:
     v = counts[g].values()
-    entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(x), v))
+    entropy[g] = -1 * sum(map(lambda x: (float(x)/len(gene_sequences[g])) * np.log(float(x)/len(gene_sequences[g])), v))
 '''
 entropy_normalized = {}
 for g in genes:
@@ -79,5 +80,9 @@ a = sorted(hack.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
 
+m_mut = sorted(counts.iteritems(), key = lambda x: sum(x[1].values()), reverse=True)
+r_mut = map(lambda x: x[0], m_mut)
 distances = {}
-
+for g in genes:
+    distances[g] = r_mut.index(g) - d.index(g) 
+e = sorted(distances.iteritems(), key = operator.itemgetter(1), reverse=True)
