@@ -50,7 +50,7 @@ entropy = {}
 for g in genes:
     v = counts[g].values()
     try:
-        entropy[g] = -1 * sum(map(lambda x: (float(x)/len(v)) * np.log(float(x)), v))/len(gene_sequences[g])
+        entropy[g] = -1 * sum(map(lambda x: (float(x)/sum(v)) * np.log(float(x)/sum(v)), v))* float(len(v))/len(gene_sequences[g])*2
     except KeyError:
         continue
 '''
