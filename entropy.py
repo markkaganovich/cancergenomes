@@ -49,7 +49,10 @@ genes = gene_snp.keys()
 entropy = {}
 for g in genes:
     v = counts[g].values()
-    entropy[g] = -1 * sum(map(lambda x: (float(x)/len(gene_sequences[g])) * np.log(float(x)/len(gene_sequences[g])), v))
+    try:
+        entropy[g] = -1 * sum(map(lambda x: (float(x)/len(gene_sequences[g])) * np.log(float(x)/len(gene_sequences[g])), v))
+    except KeyError:
+        continue
 '''
 entropy_normalized = {}
 for g in genes:
