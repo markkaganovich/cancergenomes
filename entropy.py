@@ -13,6 +13,7 @@ import operator
 import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
+import math
 
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -43,19 +44,26 @@ counts = {}
 for g in gene_snp.keys():
     counts[g] = Counter(gene_snp[g])
 
+def poisson(l, k):
+    return math.pow(l, k)/math.factorial(k) * np.exp(-1*l)
+
+
 # caculate entropty
 gene_sequences = json.load(open('gene_sequences'))
 genes = gene_snp.keys()
-entropy = {}
+entropy_possion = {}
 for g in genes:
     v = counts[g].values()
     try:
-        entropy[g] = -1 * sum(map(lambda x: x * float(len(v))/len(gene_sequences[g]) * np.log(x* (float(len(v))/len(gene_sequences[g]))), v))
+        #entropy[g] = -1 * sum(map(lambda x: x * float(len(v))/len(gene_sequences[g]) * np.log(x* (float(len(v))/len(gene_sequences[g]))), v))
         #entropy[g] = -1 * float(sum(map(lambda x: np.log(x), v))) / (len(gene_sequences[g])*2) 
+        entropy_possion[g] = sum(map(poisson, v))
     except KeyError:
         continue
 
-
+a1 = sorted(entropy_possion.iteritems(), key = operator.itemgetter(1))
+ents1 = map(lambda x: x[1], a1)
+d1 = map(lambda x: x[0], a1)
 '''
 entropy_normalized = {}
 for g in genes:
@@ -63,20 +71,20 @@ for g in genes:
         entropy_normalized[g] = entropy[g] / sum(counts[g].values())
 '''
 hack = {}
-hack2 = {}
+hack_max = {}
 keys = set(gene_sequences.keys())
 for g in genes:
     l = counts[g].values()
-    #if g in keys:
-    #    v2 = map(lambda x: x * float(len(l))/len(gene_sequences[g]), l)
-    
+    #if g in keys:  
     v = np.array(counts[g].values())
-    hack2[g] = max(v/mean(v))   
+    hack_max[g] = max(v/np.mean(v))   
     #hack[g] = np.dot(v,v)/float(sum(v))/len(gene_sequences[g])
 
-a1 = sorted(entropy.iteritems(), key = operator.itemgetter(1))
-ents1 = map(lambda x: x[1], a1)
-d1 = map(lambda x: x[0], a1)
+a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
+ents = map(lambda x: x[1], a)
+d = map(lambda x: x[0], a)
+
+
 '''
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -88,9 +96,7 @@ print "saving ..."
 plt.savefig('hack.png')
 '''
 
-a = sorted(hack.iteritems(), key = operator.itemgetter(1), reverse=True)
-ents = map(lambda x: x[1], a)
-d = map(lambda x: x[0], a)
+
 
 m_mut = sorted(counts.iteritems(), key = lambda x: sum(x[1].values()), reverse=True)
 r_mut = map(lambda x: x[0], m_mut)
