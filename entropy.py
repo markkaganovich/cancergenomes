@@ -57,6 +57,7 @@ for g in genes:
     try:
         #entropy[g] = -1 * sum(map(lambda x: x * float(len(v))/len(gene_sequences[g]) * np.log(x* (float(len(v))/len(gene_sequences[g]))), v))
         #entropy[g] = -1 * float(sum(map(lambda x: np.log(x), v))) / (len(gene_sequences[g])*2) 
+        l = sum(v)/ len(gene_sequences[g])
         entropy_possion[g] = sum(map(poisson, v))
     except KeyError:
         continue
@@ -74,11 +75,10 @@ hack = {}
 hack_max = {}
 keys = set(gene_sequences.keys())
 for g in genes:
-    l = counts[g].values()
-    #if g in keys:  
+    l = counts[g].values()    
     v = np.array(counts[g].values())
     hack_max[g] = max(v/np.mean(v))   
-    #hack[g] = np.dot(v,v)/float(sum(v))/len(gene_sequences[g])
+    
 
 a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
@@ -95,7 +95,8 @@ bar = ax.bar(ind, ents, width, color="r")
 print "saving ..."
 plt.savefig('hack.png')
 '''
-
+#if g in keys:
+#hack[g] = np.dot(v,v)/float(sum(v))/len(gene_sequences[g])
 
 
 m_mut = sorted(counts.iteritems(), key = lambda x: sum(x[1].values()), reverse=True)
