@@ -44,7 +44,7 @@ counts = {}
 for g in gene_snp.keys():
     counts[g] = Counter(gene_snp[g])
 
-def poisson(l, k):
+def poisson(k, l):
     return math.pow(l, k)/math.factorial(k) * np.exp(-1*l)
 
 
@@ -54,11 +54,20 @@ genes = gene_snp.keys()
 entropy_possion = {}
 for g in genes:
     v = counts[g].values()
+    #v = map(lambda x: long(x), v)
     try:
         #entropy[g] = -1 * sum(map(lambda x: x * float(len(v))/len(gene_sequences[g]) * np.log(x* (float(len(v))/len(gene_sequences[g]))), v))
         #entropy[g] = -1 * float(sum(map(lambda x: np.log(x), v))) / (len(gene_sequences[g])*2) 
-        l = sum(v)/ len(gene_sequences[g])
-        entropy_possion[g] = sum(map(poisson, v))
+        
+        total = []
+        for k in v:
+            l = float(sum(v)-k)/ len(gene_sequences[g])
+            try:
+                p = poisson(k, l)
+            except OverflowError:
+                p = 0
+            total.append(p)
+        entropy_possion[g] =  product(total)
     except KeyError:
         continue
 
