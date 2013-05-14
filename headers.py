@@ -56,7 +56,8 @@ def get_tablename(filename):
 ###############################################################################
 syn = {'chrom' : ['chromosome', 'chr'],
 	'cell_line_id' : ['iid'],
-	'rsid' : ['id']
+	'rsid' : ['id'],
+	'hugo_symbol': ['name2']
 }
 
 file_to_table = {'draft2_samples_QC+.txt': 'hapmap_draft2_samples'}

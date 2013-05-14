@@ -7,17 +7,18 @@ import re
 import headers
 import db_importer
 
+#db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 db = create_engine('sqlite:///tcga_somatic.db', echo = True)
 
 directory = 'mark/cancerdata/'
-filename = directory +'knownGene_join'
+filename = directory +'refseq_frames.txt'
 #cancer = 'BRCA'
 #f = directory + filename
 
 #primary_keys = ['chrom', 'start_position', 'tumor_sample_barcode']  
-primary_keys = ['hg19.knownGene.name']
+primary_keys = ['hugo_symbol', 'exoncount']
 
-db_importer.import_data(filename = filename, tablename = 'knownGene_join', db = db, key_columns = primary_keys)
+db_importer.import_data(filename = filename, tablename = 'refseq_frames', db = db, key_columns = primary_keys)
 
 def make_protein_sequence(fastafilename):
     f = open(fastafilename)
@@ -32,3 +33,5 @@ def make_protein_sequence(fastafilename):
             if gene is not None:
                 protein_sequence[gene] = protein_sequence[gene] + l.strip('\n')
     return protein_sequence
+
+
