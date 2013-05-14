@@ -192,6 +192,7 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'), co)
     return co
+'''
 
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
@@ -218,6 +219,24 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
         #    cond_co_occur[i] = {}
         #cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
     
+'''
+
+def codon(start, stop, count):
+codon_counts = {}
+d = stop - (start - 1)
+for c in count.keys():
+    base = int(c.split[':'][1]) - (start - 1)
+    num = base / 3
+    mod = base % 3
+    if mod == 3:
+        print "WTF"
+    k = str(num)
+    if k in codon_counts.keys():
+        codon_counts[k] = codon_counts[k] + count[c]
+        print "double"
+    else:
+        codon_counts[str(num)] = count[c]
+return codon_counts
 
 
 

@@ -80,7 +80,26 @@ entropy_normalized = {}
 for g in genes:
     if sum(counts[g].values()) > 30:
         entropy_normalized[g] = entropy[g] / sum(counts[g].values())
+
 '''
+
+def combination(n,c):
+    return np.product(range(n-c+1, n+1))/float(math.factorial(c))
+
+comb = {}
+for g in genes:
+    v = counts[g].values()
+    try: 
+        l = gene_sequences[g].__len__()
+        if l > 3:
+            p = sum(v) 
+            den = combination(l,p)
+            total = map(combination, [p]*len(v), v)
+            comb[g] = product(total)/den
+    except KeyError:
+        continue
+
+
 hack = {}
 hack_max = {}
 keys = set(gene_sequences.keys())
