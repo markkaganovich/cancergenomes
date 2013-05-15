@@ -37,7 +37,7 @@ for s in snps:
         q = session.query(features).filter(and_(features.c.chrom == 'chr'+s.chrom, features.c.chrpos == int(s.start_position))).first()
     except ValueError:
         continue
-    bp_to_aa[s.chrom+':'+s.pos] = {'pos' : q.pos, 'aa': q.aa1}
+    bp_to_aa[s.chrom+':'+s.start_position] = {'pos' : q.pos, 'aa': q.aa1}
 
 json.dump(bp_to_aa, open('bp_to_aa', 'w'))
 
