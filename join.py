@@ -28,7 +28,7 @@ metadata = MetaData(db)
 Session = sessionmaker(db)
 session = Session()
 
-features = Table('features', metadata., autoload = True)
+features = Table('features', metadata, autoload = True)
 bp_to_aa = {}
 
 for s in snps:
