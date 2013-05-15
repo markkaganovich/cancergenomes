@@ -41,7 +41,8 @@ for s in snps:
     if q is None:
         nones.append(q)
         print "None  " +s.chrom+':'+s.start_position
-    bp_to_aa[s.chrom+':'+s.start_position] = {'pos' : q.pos, 'aa': q.aa1}
+    else:
+        bp_to_aa[s.chrom+':'+s.start_position] = {'pos' : q.pos, 'aa': q.aa1}
 
 json.dump(bp_to_aa, open('bp_to_aa', 'w'))
 
