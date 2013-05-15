@@ -33,7 +33,10 @@ bp_to_aa = {}
 
 for s in snps:
     print s.hugo_symbol
-    q = session.query(features).filter(and_(features.c.chrom == 'chr'+s.chrom, features.c.chrpos == int(s.start_position))).first()
+    try:
+        q = session.query(features).filter(and_(features.c.chrom == 'chr'+s.chrom, features.c.chrpos == int(s.start_position))).first()
+    except ValueError:
+        continue
     bp_to_aa[s.chrom+':'+s.pos] = {'pos' : q.pos, 'aa': q.aa1}
 
 json.dump(bp_to_aa, open('bp_to_aa', 'w'))
