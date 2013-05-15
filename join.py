@@ -20,7 +20,7 @@ first_pass_mutations = ['Frame_Shift_Del', 'Frame_Shift_Ins', 'Missense_Mutation
 metadata = MetaData(db)
 Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
-snps = filter(lambda x: x, m)
+snps = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 
 db = create_engine('sqlite:///polyphen-2.2.2-whess-2011_12.sqlite', echo = False)
 
@@ -31,12 +31,16 @@ session = Session()
 features = Table('features', metadata, autoload = True)
 bp_to_aa = {}
 
+nones = []
 for s in snps:
     print s.hugo_symbol
     try:
         q = session.query(features).filter(and_(features.c.chrom == 'chr'+s.chrom, features.c.chrpos == int(s.start_position))).first()
     except ValueError:
         continue
+    if q is None:
+        nones.append(q)
+        print "None  " +s.chrom+':'+s.start_position
     bp_to_aa[s.chrom+':'+s.start_position] = {'pos' : q.pos, 'aa': q.aa1}
 
 json.dump(bp_to_aa, open('bp_to_aa', 'w'))
