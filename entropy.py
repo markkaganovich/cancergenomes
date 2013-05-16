@@ -155,7 +155,7 @@ counts_aa = {}
 for g in genes:
     counts_aa[g] = {}
     for c in counts[g].keys():
-        aa = bp_to_aa[c][pos]
+        aa = bp_to_aa[c]['pos']
         if aa in counts_aa[g].keys():
             counts_aa[g][aa] = counts_aa[g][aa] + counts[g][c]
         else:
