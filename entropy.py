@@ -113,7 +113,7 @@ hack_max = {}
 keys = set(gene_sequences.keys())
 for g in genes:
     l = counts[g].values()    
-    v = np.array(counts[g].values())
+    v = np.array(counts_aa[g].values())
     hack_max[g] = max(v/np.mean(v))   
     
 
@@ -179,7 +179,7 @@ for g in genes:
     v = counts_aa[g].values()
     n = sum(v)
     try:
-        p = float(n/prtn_len[g])
+        p = float(n)/prtn_len[g]
     except KeyError:
         continue
     binomial_genes[g] = map(binomial, [n]*len(v), v, [p]*len(v))
