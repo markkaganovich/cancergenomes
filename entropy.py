@@ -89,7 +89,7 @@ def combination(n,c):
 def binomial(n, k, p):
     return combination(n,k) * math.pow(p,k) * math.pow(1-p, n-k)
 
-
+'''
 comb = {}
 for g in genes:
     v = counts[g].values()
@@ -106,7 +106,7 @@ for g in genes:
             comb[g] = np.product(total)/math.pow(den, len(v))
     except KeyError:
         continue
-
+'''
 
 hack = {}
 hack_max = {}
