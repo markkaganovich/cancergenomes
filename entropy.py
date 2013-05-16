@@ -151,18 +151,38 @@ def entr(v):
 
 #convert coutns to counts_aa by hitting bp_to_aa hash
 bp_to_aa = json.load(open('bp_to_aa'))
-counts_aa = {}
+def make_counts_aa(genes, counts):
+    silent = []
+    counts_aa = {}
+    for g in genes:
+        counts_aa[g] = {}
+        for c in counts[g].keys():
+            try:
+                aa = bp_to_aa[c]['pos']
+                if aa in counts_aa[g].keys():
+                    counts_aa[g][aa] = counts_aa[g][aa] + counts[g][c]
+                else:
+                    counts_aa[g][aa] = counts[g][c]
+            except KeyError:
+                silent.append(c)
+    return counts_aa
+
+if 'counts_aa' in os.listdir('./'):
+    counts_aa = json.load(open('counts_aa'))
+else:
+    make_counts_aa(genes, counts)
+
+
+prtn_len = json.load(open('prtn_len'))
+binomial_genes = {}
 for g in genes:
-    counts_aa[g] = {}
-    for c in counts[g].keys():
-        try:
-            aa = bp_to_aa[c]['pos']
-            if aa in counts_aa[g].keys():
-                counts_aa[g][aa] = counts_aa[g][aa] + counts[g][c]
-            else:
-                counts_aa[g][aa] = counts[g][c]
-        except KeyError:
-            print c
+    v = counts_aa[g].values()
+    n = sum(v)
+    try:
+        p = float(n/prtn_len[g])
+    except KeyError:
+        continue
+    binomial_genes[g] = map(binomial, [n]*len(v), v, [p]*len(v))
 
 
 
