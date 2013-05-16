@@ -24,41 +24,41 @@ def convert_hg18tohg19(db, tablename, build_col = 'ncbi_build', liftoverdir = '/
     for a in all36:
         bed18.write('chr'+str(a.chrom) + '\t' + str(a.start_position) + '\t' + str(int(a.end_position)+1) + '\n')
     commands.getstatusoutput("%s hg18.bed %s hg19.bed unmapped" % (liftoverdir+'liftOver', chainfile))
-    unmapped = []
-    lines = open('unmapped').readlines()
-    for l in lines:
-        if not l.startswith('#'):
-            snppos = l.split('\t')[0] + ':' + l.split('\t')[1]
-            unmapped.append(snppos)  
-    hg19 = open('hg19.bed')
-    maf19temp = open('maf19temp', 'w')
-    keys = all36[0].keys()
-    headerline = ''
-    for k in keys:
-        headerline = headerline+k+'\t'
-    maf19temp.write(headerline.strip('\t')+'\n')   
-    for a in all36:
-        snppos = 'chr' + str(a.chrom) + ':' + str(a.start_position)
-        if snppos not in unmapped:
-            try:
-                l = hg19.next()
-            except StopIteration:
-                break
-            newchrom = l.split('\t')[0].split('chr')[1]
-            newstart = l.split('\t')[1]
-            newend = str(int(newstart) + 1)
-            a.chrom = newchrom
-            a.start_position = newstart
-            a.end_position = newend
-            setattr(a, build_col, '37')
-            newline = ''
-            for k in keys:
-                newline = newline + str(getattr(a, k)) + '\t'
-            maf19temp.write(newline.strip('\t') + '\n')
-        else:
-            print snppos
-            continue
-    maf19temp.close()
+unmapped = []
+lines = open('unmapped').readlines()
+for l in lines:
+    if not l.startswith('#'):
+        snppos = l.split('\t')[0] + ':' + l.split('\t')[1]
+        unmapped.append(snppos)  
+hg19 = open('hg19.bed')
+maf19temp = open('maf19temp', 'w')
+keys = all36[0].keys()
+headerline = ''
+for k in keys:
+    headerline = headerline+k+'\t'
+maf19temp.write(headerline.strip('\t')+'\n')   
+for a in all36:
+    snppos = 'chr' + str(a.chrom) + ':' + str(a.start_position)
+    if snppos not in unmapped:
+        try:
+            l = hg19.next()
+        except StopIteration:
+            break
+        newchrom = l.split('\t')[0].split('chr')[1]
+        newstart = l.split('\t')[1]
+        newend = str(int(newstart) + 1)
+        a.chrom = newchrom
+        a.start_position = newstart
+        a.end_position = newend
+        setattr(a, build_col, '37')
+        newline = ''
+        for k in keys:
+            newline = newline + str(getattr(a, k)) + '\t'
+        maf19temp.write(newline.strip('\t') + '\n')
+    else:
+        print snppos
+        continue
+maf19temp.close()
 
     #session.query(table).filter(getattr(table.c, build_col) == '36').delete(synchronize_session=False)
     #session.commit()

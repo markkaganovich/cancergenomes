@@ -86,16 +86,24 @@ for g in genes:
 def combination(n,c):
     return np.product(range(n-c+1, n+1))/float(math.factorial(c))
 
+def binomial(n, k, p):
+    return combination(n,k) * math.pow(p,k) * math.pow(1-p, n-k)
+
+
 comb = {}
 for g in genes:
     v = counts[g].values()
     try: 
-        l = gene_sequences[g].__len__()
-        if l > 3:
-            p = sum(v) 
+        l = gene_sequences[g].__len__()*2
+        if l > 6:
+            p = len(v) 
+            print l
+            print p
             den = combination(l,p)
+            print den
             total = map(combination, [p]*len(v), v)
-            comb[g] = product(total)/den
+            print total
+            comb[g] = np.product(total)/math.pow(den, len(v))
     except KeyError:
         continue
 
@@ -138,3 +146,25 @@ e = sorted(distances.iteritems(), key = operator.itemgetter(1), reverse=True)
 
 def entr(v):
     return sum(map(lambda x: (float(x)/1000) * np.log(float(x)/1000), v))
+
+
+
+#convert coutns to counts_aa by hitting bp_to_aa hash
+bp_to_aa = json.load(open('bp_to_aa'))
+counts_aa = {}
+for g in genes:
+    counts_aa[g] = {}
+    for c in counts[g].keys():
+        aa = bp_to_aa[c][pos]
+        if aa in counts_aa[g].keys():
+            counts_aa[g][aa] = counts_aa[g][aa] + counts[g][c]
+        else:
+            counts_aa[g][aa] = counts[g][c]
+
+
+
+
+
+
+
+
