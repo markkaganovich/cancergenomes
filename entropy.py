@@ -114,22 +114,28 @@ if 'counts_aa' in os.listdir('./'):
 else:
     make_counts_aa(genes, counts)
 
+prtn_len = json.load(open('prtn_len'))
 
 hack = {}
 hack_max = {}
 keys = set(gene_sequences.keys())
+prtn_len_keys = set(prtn_len.keys())
 for g in genes:
     l = counts[g].values()    
     v = np.array(counts_aa[g].values())
-    if len(v) > 0:
+    if len(v) > 0 and g in prtn_len.keys():
         hack_max[g] = max(v/np.mean(v))   
     
-prtn_len = json.load(open('prtn_len'))
+
 
 a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
-mut_rate = map(lambda x: sum(counts_aa[x])/float(prtn_len), d)
+mut_rate = map(lambda x: sum(counts_aa[x].values())/float(prtn_len[x]), d)
+    
+
+plt.scatter(ents[0:30], mut_rate[0:30]) 
+f = [d[i] for i in range(0,len(d)) if mut_rate[i] >= .2 and ents[i]<2]
 
 
 '''
