@@ -108,18 +108,28 @@ for g in genes:
         continue
 '''
 
+
+if 'counts_aa' in os.listdir('./'):
+    counts_aa = json.load(open('counts_aa'))
+else:
+    make_counts_aa(genes, counts)
+
+
 hack = {}
 hack_max = {}
 keys = set(gene_sequences.keys())
 for g in genes:
     l = counts[g].values()    
     v = np.array(counts_aa[g].values())
-    hack_max[g] = max(v/np.mean(v))   
+    if len(v) > 0:
+        hack_max[g] = max(v/np.mean(v))   
     
+prtn_len = json.load(open('prtn_len'))
 
 a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
+mut_rate = map(lambda x: sum(counts_aa[x])/float(prtn_len), d)
 
 
 '''
@@ -167,13 +177,8 @@ def make_counts_aa(genes, counts):
                 silent.append(c)
     return counts_aa
 
-if 'counts_aa' in os.listdir('./'):
-    counts_aa = json.load(open('counts_aa'))
-else:
-    make_counts_aa(genes, counts)
 
 
-prtn_len = json.load(open('prtn_len'))
 binomial_genes = {}
 for g in genes:
     v = counts_aa[g].values()
