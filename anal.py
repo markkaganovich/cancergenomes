@@ -192,7 +192,7 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'), co)
     return co
-'''
+
 
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
@@ -205,9 +205,13 @@ for g in genes:
     prob[g] = gene_sample_set[g].__len__()
 json.dump(prob, open('Prob_genes', 'w'))
 '''
+
 prob = json.load(open('Prob_genes'))
 
 # translate co_occur matrix into conditional probabilityes
+
+cond_co_occur = np.load(open('cond_co_occur'))
+'''
 cond_co_occur = np.identity(len(genes))
 for i, gi in enumerate(genes):
     for j, gj in enumerate(genes): 
@@ -220,7 +224,6 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
         #cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
     
 '''
-
 
 def get_start(starts, frames, snp, strand, stops, rem):
     '''
@@ -266,9 +269,9 @@ def codon(rseq, count):
         if rseq.strand == '-':
             print start
             print snp
-            base = (start - snp  + frame)
+            base = (start - snp )
             print base
-        residue = rem + base / 3
+        residue = (rem + base) / 3 
         print("residue:%s", residue)
         if base % 3 == 3:
             print "wtf"

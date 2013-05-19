@@ -123,7 +123,7 @@ prtn_len_keys = set(prtn_len.keys())
 for g in genes:
     l = counts[g].values()    
     v = np.array(counts_aa[g].values())
-    if len(v) > 0 and g in prtn_len.keys():
+    if len(v) > 0 and g in prtn_len_keys:
         hack_max[g] = max(v/np.mean(v))   
     
 
@@ -132,6 +132,8 @@ a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
 mut_rate = map(lambda x: sum(counts_aa[x].values())/float(prtn_len[x]), d)
+prod = map(lambda x: ents[x] * mut_rate[x], range(0, len(d)))
+div = map(lambda x: ents[x] / mut_rate[x], range(0, len(d)))
     
 
 plt.scatter(ents[0:30], mut_rate[0:30]) 
