@@ -225,6 +225,12 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
     
 '''
 
+# find most mutated but least likely for memo
+p53 = 17721
+np.where(co_occur_np[p53] == 0.)
+
+
+
 def get_start(starts, frames, snp, strand, stops, rem):
     '''
     starts must be reversed for - strand inputs
