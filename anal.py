@@ -193,12 +193,12 @@ def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
     np.save(open(outputfile, 'w'), co)
     return co
 
-
+'''
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
 else:
     co = run_co_occur(gene_sample_set)
-
+'''
 '''
 prob = {}
 for g in genes:
