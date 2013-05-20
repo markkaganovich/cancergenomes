@@ -88,7 +88,7 @@ def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
         sample = x.tumor_sample_barcode
         print sample
         try:
-            residue = x.residue['pos'] + x.hugo_symbol
+            residue = str(x.residue['pos']) + ':'+ x.hugo_symbol
         except AttributeError:
             continue
         if residue not in matrix_samples:
@@ -104,16 +104,16 @@ if snp_sample_file not in os.listdir('./'):
     get_snp_sample_matrix(rows, outputfile = snp_sample_file)
 snp_sample = json.load(open(snp_sample_file, 'r'))
 
-#snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
+#snp_gene = dict(map(lambda x: (x.residue['pos'], x.hugo_symbol), rows))
 
-def get_gene_sample(snp_sample, snp_gene, outputfile = 'gene_sample'):
+def get_gene_sample(snp_sample, outputfile = 'gene_sample'):
     '''
     group previous dictionary by genes
     '''
     gene_sample = {}
     snps = snp_sample.keys()
     for s in snps:
-        gene = snp_gene[s]
+        gene = s.split(':')[1]
         try:
             gene_sample[gene].extend(snp_sample[s])
         except KeyError:
@@ -126,10 +126,9 @@ def get_gene_sample(snp_sample, snp_gene, outputfile = 'gene_sample'):
 
 gene_sample_file = 'gene_sample'
 if gene_sample_file not in os.listdir('./'):
-    get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
+    get_gene_sample(snp_sample, outputfile = gene_sample_file)
 gene_sample = json.load(open(gene_sample_file, 'r'))
 
-snp_gene = dict(map(lambda x: (x.residue, x.hugo_symbol), rows))
 
 genes = gene_sample.keys()
 
