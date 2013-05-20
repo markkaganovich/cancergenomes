@@ -34,12 +34,13 @@ rows = map(lambda x: Rows(x), f)
 
 bp_to_aa = json.load(open('bp_to_aa'))
 # convert rows to amino acids, then run the co_occurrence stuff
+badrows = []
 for r in rows:
     try:
         setattr(r, 'residue', bp_to_aa[r.chrom+':'+r.start_position])
-    except AttributeError:
+    except KeyError:
         print r.chrom +':' + r.start_position
-        rows.remove(r)
+        badrows.append(r)
 
 print "about to make matrix...."
 
@@ -87,7 +88,7 @@ def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
         sample = x.tumor_sample_barcode
         print sample
         try:
-            residue = x.residue['pos']
+            residue = x.residue['pos'] + x.hugo_symbol
         except AttributeError:
             continue
         if residue not in matrix_samples:
@@ -128,7 +129,7 @@ if gene_sample_file not in os.listdir('./'):
     get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
 gene_sample = json.load(open(gene_sample_file, 'r'))
 
-snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
+snp_gene = dict(map(lambda x: (x.residue, x.hugo_symbol), rows))
 
 genes = gene_sample.keys()
 
