@@ -141,15 +141,19 @@ gene_sample_set = convert_to_set(gene_sample)
 
 
 
-def run_co_occur(gene_sample_set, outputfile = 'co_occur_np'):
-    genes = gene_sample_set.keys()
+def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
+    #genes = gene_sample_set.keys()
+    samples = set(samples)
     co = np.identity(len(genes))
     #co_occur = {}
     for i, gi in enumerate(genes):
         #co_occur[i] = {}
         for j, gj in enumerate(genes):
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
-            co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
+            set1 = gene_sample_set[gi].intersection(samples)
+            set2 = gene_sample_set[gj].intersection(samples)
+            co[i,j] = len(set1.intersection(set2))
+            #co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'), co)
     return co
