@@ -37,7 +37,7 @@ bp_to_aa = json.load(open('bp_to_aa'))
 for r in rows:
     try:
         setattr(r, 'residue', bp_to_aa[r.chrom+':'+r.start_position])
-    except KeyError:
+    except AttributeError:
         print r.chrom +':' + r.start_position
         rows.remove(r)
 
@@ -86,11 +86,14 @@ def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
     for x in results_list:
         sample = x.tumor_sample_barcode
         print sample
-        residue = x.residue
+        try:
+            residue = x.residue['pos']
+        except AttributeError:
+            continue
         if residue not in matrix_samples:
             snp_sample[residue] = []
             matrix_samples.add(residue)
-        if sample not in snp_sample[snp]:
+        if sample not in snp_sample[residue]:
             snp_sample[residue].append(sample)
     out = open(outputfile, 'w')
     json.dump(snp_sample, out)
@@ -124,6 +127,8 @@ gene_sample_file = 'gene_sample'
 if gene_sample_file not in os.listdir('./'):
     get_gene_sample(snp_sample, snp_gene, outputfile = gene_sample_file)
 gene_sample = json.load(open(gene_sample_file, 'r'))
+
+snp_gene = dict(map(lambda x: (x.chrom +':' + x.start_position, x.hugo_symbol), rows))
 
 genes = gene_sample.keys()
 
