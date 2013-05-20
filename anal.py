@@ -24,7 +24,14 @@ session = Session()
 
 Mutations = Table('mutations_v1', metadata, autoload = True)
 m = Mutations.select().execute()
-rows = filter(lambda x: x.variant_classification in first_pass_mutations, m)
+
+class Rows(object):
+    def __init__(self,object):
+        for x in object.keys():
+            setattr(self, x, object[x])
+
+f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
+rows = map(lambda x: Rows(x), f)
 
 def count_snps(results_list, outputfile = 'snpcount'):
     snpcount = {}
@@ -227,74 +234,18 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
 
 # find most mutated but least likely for memo
 p53 = 17721
-np.where(co_occur_np[p53] == 0.)
+np.where(cond_co_occur[p53] == 0.)
+b = map(lambda x: len(gene_sample[genes[x]]), a[0])
 
 
-
-def get_start(starts, frames, snp, strand, stops, rem):
-    '''
-    starts must be reversed for - strand inputs
-    '''
-    if len(starts) != 1:
-        next_start = starts[1]
-        next_frame = frames[1]
-        if (strand == '+' and snp >= next_start) or (strand =='-' and snp <= next_start):
-            if strand == '+':
-                rem = rem + stops[0] - starts[0] + 1
-            if strand == '-':
-                rem = rem+starts[0] - stops[0] 
-            print rem
-            return [next_start, next_frame, starts[1:], frames[1:], stops[1:], rem]
-    return [starts[0], frames[0], starts, frames, stops, rem]
-
-''' 
-do this for every gene: get an rseq thing from the refseq db, then 
-consolidate that counts into residues
-'''
-def codon(rseq, count):
-    codon_counts = {}
-    starts = map(lambda x: int(x), rseq.exonstarts.strip(',').split(','))
-    frames = map(lambda x: int(x), rseq.exonframes.strip(',').split(','))
-    stops = map(lambda x: int(x), rseq.exonends.strip(',').split(','))
-    snps = map(lambda x: int(x.split(':')[1]), count.keys())
-    snps.sort()
-    rem = 0
-    chrom = count.keys()[0].split(':')[0]
-    if rseq.strand == '-':
-        temp = starts
-        starts = stops
-        stops = temp
-        starts.reverse()
-        frames.reverse()
-        stops.reverse()
-        snps.sort(reverse=True)
-    for snp in snps:
-        [start, frame, starts, frames, stops, rem] = get_start(starts, frames, snp, rseq.strand, stops, rem)
-        if rseq.strand == '+':
-            base = (snp - start + 1 - frame)
-        if rseq.strand == '-':
-            print start
-            print snp
-            base = (start - snp )
-            print base
-        residue = (rem + base) / 3 
-        print("residue:%s", residue)
-        if base % 3 == 3:
-            print "wtf"
-        k = str(residue)
-        print("k",k)
-        if k in codon_counts.keys():
-            codon_counts[k] = codon_counts[k] + count[chrom+':'+str(snp)]
-            print "double"
-            print k
-        else:
-            codon_counts[k] = count[chrom+':'+str(snp)]
-    return codon_counts
+bp_to_aa = json.load(open('bp_to_aa'))
+# convert rows to amino acids, then run the co_occurrence stuff
+for r in rows:
+    try:
+        setattr(r, 'residue', bp_to_aa[r.chrom+':'+r.start_position])
+    except KeyError:
+        print r.chrom +':' + r.start_position
+        rows.remove(r)
 
 
-
-
-
-
-
-
+#given a group of samples and genes, calculate the co occurrence stuff      
