@@ -138,6 +138,7 @@ def convert_to_set(dic):
     return dic
 
 gene_sample_set = convert_to_set(gene_sample)
+snp_sample_set = convert_to_set(snp_sample)
 
 
 
@@ -147,6 +148,7 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     co = np.identity(len(genes))
     #co_occur = {}
     for i, gi in enumerate(genes):
+        print gi
         #co_occur[i] = {}
         for j, gj in enumerate(genes):
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
@@ -158,11 +160,13 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     np.save(open(outputfile, 'w'), co)
     return co
 
+samples = map(lambda x: x.tumor_sample_barcode, rows)
+
 
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
 else:
-    co = run_co_occur(gene_sample_set)
+    co = run_co_occur(gene_sample_set, genes, samples)
 
 
 prob = {}
@@ -185,3 +189,36 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
         #cond_co_occur[i][j] = float(co_occur[i][j]) /  float(prob[i])
     
 '''
+
+
+'''
+make the same co_occur function for residues, need to input residue frequency to determine cutoffs
+and only use residues that are relatively frequent
+'''
+if 'counts_aa' in os.listdir('./'):
+    counts_aa = json.load(open('counts_aa'))
+else:
+    make_counts_aa(genes, counts)
+
+f=[]
+for g in genes:
+    f.extend([k+':'+ g for k in counts_aa[g].keys() if counts_aa[g][k] >4])
+co_f = run_co_occur(snp_sample_set, f, samples, 'test_residues_co')
+
+def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = samples):
+    set1 = gene_sample_set[gene1].intersection(samples)
+    set2 = gene_sample_set[gene2].intersection(samples)
+    sam = set1.intersection(set2)
+    n = len(sam)
+    return [n, sam]
+
+def get_co2(gene1, gene_sample_set= snp_sample_set, samples=samples, genes = f, co=co_r):
+    a =np.where(co[genes.index(gene1)] >0)
+    g = map(lambda x: genes[int(x)], a[0])
+    return g
+
+
+
+
+
+
