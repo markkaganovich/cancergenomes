@@ -77,6 +77,10 @@ if matrixfile not in os.listdir('./'):
      get_matrix(rows, outputfile = matrixfile)
 sample_matrix = json.load(open(matrixfile, 'r'))
 
+'''
+the next two functions are what you need to make the matrix that the co_occur function uses
+
+'''
 def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
     '''
     make residue dictionary
@@ -105,7 +109,6 @@ if snp_sample_file not in os.listdir('./'):
     get_snp_sample_matrix(rows, outputfile = snp_sample_file)
 snp_sample = json.load(open(snp_sample_file, 'r'))
 
-#snp_gene = dict(map(lambda x: (x.residue['pos'], x.hugo_symbol), rows))
 
 def get_gene_sample(snp_sample, outputfile = 'gene_sample'):
     '''
@@ -152,16 +155,19 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
         print gi
         #co_occur[i] = {}
         for j, gj in enumerate(genes):
+            if len(samples) < len(co_occur.all_samples):
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
-            set1 = gene_sample_set[gi].intersection(samples)
-            set2 = gene_sample_set[gj].intersection(samples)
-            co[i,j] = len(set1.intersection(set2))
+                set1 = gene_sample_set[gi].intersection(samples)
+                set2 = gene_sample_set[gj].intersection(samples)
+                co[i,j] = len(set1.intersection(set2))
+            else:
+                co[i,j] = len(gene_sample_set[gi].intersection(gene_sample_set[gj]))
             #co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
     np.save(open(outputfile, 'w'), co)
     return co
 
-samples = map(lambda x: x.tumor_sample_barcode, rows)
+all_samples = map(lambda x: x.tumor_sample_barcode, rows)
 
 
 if 'co_occur_np' in os.listdir('./'):
@@ -207,7 +213,12 @@ for g in genes:
 f_set = set(f)
 
 f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
-co_f = run_co_occur(snp_sample_set, f, samples, 'test_residues_co')
+
+res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
+rs = convert_to_set(res_sample)
+res_genes = get_gene_sample(res_sample, 'f_res_sample')
+rg = convert_to_set(res_genes)
+co_f = run_co_occur(rg, rg.keys(), samples, 'filter_gene_co')
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = samples):
     set1 = gene_sample_set[gene1].intersection(samples)
