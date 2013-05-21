@@ -41,7 +41,7 @@ for r in rows:
     except KeyError:
         print r.chrom +':' + r.start_position
         badrows.append(r)
-
+badrows = set(badrows)
 print "about to make matrix...."
 
 
@@ -98,6 +98,7 @@ def get_snp_sample_matrix(results_list, outputfile = 'snp_sample'):
             snp_sample[residue].append(sample)
     out = open(outputfile, 'w')
     json.dump(snp_sample, out)
+    return snp_sample
         
 snp_sample_file = 'residue_sample'        
 if snp_sample_file not in os.listdir('./'):
@@ -202,7 +203,10 @@ else:
 
 f=[]
 for g in genes:
-    f.extend([k+':'+ g for k in counts_aa[g].keys() if counts_aa[g][k] >4])
+    f.extend([k+':'+ g for k in counts_aa[g].keys() if counts_aa[g][k] >2])
+f_set = set(f)
+
+f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
 co_f = run_co_occur(snp_sample_set, f, samples, 'test_residues_co')
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = samples):
