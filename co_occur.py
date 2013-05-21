@@ -148,14 +148,19 @@ snp_sample_set = convert_to_set(snp_sample)
 
 def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     #genes = gene_sample_set.keys()
-    samples = set(samples)
+    #samples = set(samples)
     co = np.identity(len(genes))
+    if len(samples) < len(all_samples):
+        print len(samples)
+        flag = 1
+    else:
+        flag = 0
     #co_occur = {}
     for i, gi in enumerate(genes):
         print gi
         #co_occur[i] = {}
         for j, gj in enumerate(genes):
-            if len(samples) < len(co_occur.all_samples):
+            if flag:
             #co_occur[i][j] = gene_sample_set[i].intersection(gene_sample[j]).__len__()
                 set1 = gene_sample_set[gi].intersection(samples)
                 set2 = gene_sample_set[gj].intersection(samples)
@@ -164,16 +169,17 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
                 co[i,j] = len(gene_sample_set[gi].intersection(gene_sample_set[gj]))
             #co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
+    print len(samples)
     np.save(open(outputfile, 'w'), co)
     return co
 
-all_samples = map(lambda x: x.tumor_sample_barcode, rows)
-
+all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
+global all_samples
 
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
 else:
-    co = run_co_occur(gene_sample_set, genes, samples)
+    co = run_co_occur(gene_sample_set, genes, all_samples)
 
 
 prob = {}
@@ -215,10 +221,21 @@ f_set = set(f)
 f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
 
 res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
-rs = convert_to_set(res_sample)
+#rs = convert_to_set(res_sample)
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
 rg = convert_to_set(res_genes)
-co_f = run_co_occur(rg, rg.keys(), samples, 'filter_gene_co')
+co_f = run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co')
+
+gbm = filter(lambda x: x.cancer_type == 'GBM', rows)  
+res_sample = get_snp_sample_matrix(gbm, 'f_rows.snp_sample')
+res_genes = get_gene_sample(res_sample, 'f_res_sample')
+rg = convert_to_set(res_genes)
+co_f = run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co')
+
+s = []
+map(lambda x: s.extend(res_sample[x]), res_sample.keys())
+len(set(s))
+
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = samples):
     set1 = gene_sample_set[gene1].intersection(samples)
