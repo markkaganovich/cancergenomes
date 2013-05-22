@@ -181,7 +181,8 @@ all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
 
 
 if 'co_occur_np' in os.listdir('./'):
-    [co, co_exp] = np.load(open('co_occur_np'))
+    co = np.load(open('co_occur_np'))
+    co_exp = np.load(open('co_occur_np_exp'))
 else:
     [co, co_exp] = run_co_occur(gene_sample_set, genes, all_samples)
 
