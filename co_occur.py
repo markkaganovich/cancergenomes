@@ -150,6 +150,7 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     #genes = gene_sample_set.keys()
     #samples = set(samples)
     co = np.identity(len(genes))
+    co_exp = np.identity(len(genes))
     if len(samples) < len(all_samples):
         print len(samples)
         flag = 1
@@ -167,20 +168,22 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
                 co[i,j] = len(set1.intersection(set2))
             else:
                 co[i,j] = len(gene_sample_set[gi].intersection(gene_sample_set[gj]))
+            co_exp[i,j] = len(gene_sample_set[gi])*len(gene_sample_set[gj])/float(len(samples))    
             #co[i,j] = gene_sample_set[gi].intersection(gene_sample[gj]).__len__()
     #json.dump(co_occur, open(outputfile, 'w'))
     print len(samples)
     np.save(open(outputfile, 'w'), co)
-    return co
+    np.save(open(outputfile+'_exp', 'w'), co_exp)
+    return [co, co_exp]
 
 global all_samples
 all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
 
 
 if 'co_occur_np' in os.listdir('./'):
-    co = np.load(open('co_occur_np'))
+    [co, co_exp] = np.load(open('co_occur_np'))
 else:
-    co = run_co_occur(gene_sample_set, genes, all_samples)
+    [co, co_exp] = run_co_occur(gene_sample_set, genes, all_samples)
 
 
 prob = {}
@@ -216,7 +219,7 @@ else:
 
 f=[]
 for g in genes:
-    f.extend([k+':'+ g for k in counts_aa[g].keys() if counts_aa[g][k] >2])
+    f.extend([k+':'+ g for k in counts_aa[g].keys() if counts_aa[g][k] >4])
 f_set = set(f)
 
 f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
@@ -225,19 +228,20 @@ res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
 #rs = convert_to_set(res_sample)
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
 rg = convert_to_set(res_genes)
-co_f = run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co')
+[co_f4, co_f4_exp]= run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co_4')
 
 gbm = filter(lambda x: x.cancer_type == 'GBM', rows)  
 res_sample = get_snp_sample_matrix(gbm, 'f_rows.snp_sample')
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
-rg = convert_to_set(res_genes)
-rs = convert_to_set(res_sample)
-co_f = run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co')
+rg_gbm = convert_to_set(res_genes)
+rs_gbm = convert_to_set(res_sample)
+co_gbm = run_co_occur(rg_gbm, rg_gbm.keys(), all_samples, 'filter_gene_co_gbm')
 
+'''
 s = []
 map(lambda x: s.extend(res_sample[x]), res_sample.keys())
 len(set(s))
-
+'''
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
     set1 = gene_sample_set[gene1].intersection(samples)
@@ -246,13 +250,36 @@ def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
     n = len(sam)
     return [n, sam]
 
-def get_co2(gene1, gene_sample_set= snp_sample_set, samples=samples, genes = f, co=co_r):
+def get_co2(gene1, gene_sample_set= snp_sample_set, samples=set(s), genes = f, co=co_r):
     a =np.where(co[genes.index(gene1)] >0)
     g = map(lambda x: genes[int(x)], a[0])
     return g
 
+'''
+select subset of co_occur
+
+'''
+gene_set = ['BRAF', 'KRAS', 'EGFR']
+def make_subset(co, rg, gene_set):
+    #old_co = co_f1
+    new_co = np.identity(len(gene_set))
+    for i_new,g in enumerate(gene_set):
+        try:
+            i = rg.keys().index(g)
+            #old_i = old_rg.keys().index(g)
+        except KeyError:
+            continue
+        for j_new,h in enumerate(gene_set):
+            try:
+                j = rg.keys().index(h)
+                #old_j = old_rg.keys().index(g)
+            except KeyError:
+                continue
+            new_co[i_new][j_new] = co[i][j]
+    return new_co
 
 #m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), all_samples)
+'''
 p53samples = map(lambda x: x.tumor_sample_barcode, filter(lambda x: x.hugo_symbol =='TP53', rows))
 p53_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(p53samples)))
 
@@ -260,4 +287,15 @@ a = get_co('TP53', 'MDM2', gene_sample_set, all_samples)
 a_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(a[1])))
 scipy.stats.ttest_1samp(a_m, np.mean(m))
 
+a = get_co('TP53', 'CDKN2A', gene_sample_set, all_samples)
+a_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(a[1])))
+
+MDM2samples = map(lambda x: x.tumor_sample_barcode, filter(lambda x: x.hugo_symbol =='MDM2', rows))
+MDM2_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(MDM2samples)))
+'''
+
+a = co_f4[rg.keys().index('BRAF')]
+c = a/a_exp
+
+# do this for all the oncogenes to find new ones
 
