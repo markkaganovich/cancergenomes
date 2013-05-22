@@ -173,8 +173,9 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     np.save(open(outputfile, 'w'), co)
     return co
 
-all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
 global all_samples
+all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
+
 
 if 'co_occur_np' in os.listdir('./'):
     co = np.load(open('co_occur_np'))
@@ -230,6 +231,7 @@ gbm = filter(lambda x: x.cancer_type == 'GBM', rows)
 res_sample = get_snp_sample_matrix(gbm, 'f_rows.snp_sample')
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
 rg = convert_to_set(res_genes)
+rs = convert_to_set(res_sample)
 co_f = run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co')
 
 s = []
@@ -237,7 +239,7 @@ map(lambda x: s.extend(res_sample[x]), res_sample.keys())
 len(set(s))
 
 
-def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = samples):
+def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
     set1 = gene_sample_set[gene1].intersection(samples)
     set2 = gene_sample_set[gene2].intersection(samples)
     sam = set1.intersection(set2)
@@ -250,7 +252,12 @@ def get_co2(gene1, gene_sample_set= snp_sample_set, samples=samples, genes = f, 
     return g
 
 
+#m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), all_samples)
+p53samples = map(lambda x: x.tumor_sample_barcode, filter(lambda x: x.hugo_symbol =='TP53', rows))
+p53_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(p53samples)))
 
-
+a = get_co('TP53', 'MDM2', gene_sample_set, all_samples)
+a_m = map(lambda x: len(filter(lambda y: y.tumor_sample_barcode == x, rows)), list(set(a[1])))
+scipy.stats.ttest_1samp(a_m, np.mean(m))
 
 
