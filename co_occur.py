@@ -228,12 +228,14 @@ f_set = set(f)
 
 f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
 
-res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
+def make_co_occur(frows):
+    res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
 #rs = convert_to_set(res_sample)
-res_genes = get_gene_sample(res_sample, 'f_res_sample')
-rg = convert_to_set(res_genes)
-s = getsamples(res_sample)
-[co_f4, co_f4_exp]= run_co_occur(rg, rg.keys(), s, 'filter_gene_co_4')
+    res_genes = get_gene_sample(res_sample, 'f_res_sample')
+    rg = convert_to_set(res_genes)
+    s = getsamples(res_sample)
+    [co, co_exp]= run_co_occur(rg, rg.keys(), s, 'filter_gene_co_4')
+    return [co, co_exp, rg]
 
 gbm = filter(lambda x: x.cancer_type == 'GBM', rows)  
 res_sample = get_snp_sample_matrix(gbm, 'f_rows.snp_sample')
@@ -258,9 +260,25 @@ rg_peaks = convert_to_set(res_genes)
 s = getsamples(res_sample)
 [co_peaks, co_peaks_exp]= run_co_occur(rg_peaks, rg_peaks.keys(), s, 'co_peaks')
 
+[co_peaks, co_peaks_exp, rg] = make_co_occur(f_rows)
 
+uniques = {}
+for i,g in enumerate(rg.keys()):
+    gene_co = co_peaks[i]
+    gene_exp = co_peaks_exp[i]
+    foo = np.where(gene_co < gene_exp)
+    bar = np.where(gene_exp >= 1.0)
+    foobar = set(foo[0]).intersection(set(bar[0]))
+    #foobar = set(foo[0])
+    uniques[g] = map(lambda x: rg.keys()[x], list(foobar))
+    uniques[g].append(g)
 
+top_excluded = {}
+for g in rg.keys():
+    foo = filter(lambda x: g in x, uniques.values())
+    top_excluded[g] = len(foo)
 
+#do rectangular co_occur; top residue genes by all genes
 
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
