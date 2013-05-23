@@ -208,7 +208,10 @@ np.save(open('cond_co_occur', 'w'), cond_co_occur)
     
 '''
 
-
+def getsamples(res_sample):
+    s = []
+    map(lambda x: s.extend(res_sample[x]), res_sample.keys())
+    return set(s)
 '''
 make the same co_occur function for residues, need to input residue frequency to determine cutoffs
 and only use residues that are relatively frequent
@@ -229,7 +232,8 @@ res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
 #rs = convert_to_set(res_sample)
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
 rg = convert_to_set(res_genes)
-[co_f4, co_f4_exp]= run_co_occur(rg, rg.keys(), all_samples, 'filter_gene_co_4')
+s = getsamples(res_sample)
+[co_f4, co_f4_exp]= run_co_occur(rg, rg.keys(), s, 'filter_gene_co_4')
 
 gbm = filter(lambda x: x.cancer_type == 'GBM', rows)  
 res_sample = get_snp_sample_matrix(gbm, 'f_rows.snp_sample')
@@ -238,11 +242,26 @@ rg_gbm = convert_to_set(res_genes)
 rs_gbm = convert_to_set(res_sample)
 co_gbm = run_co_occur(rg_gbm, rg_gbm.keys(), all_samples, 'filter_gene_co_gbm')
 
-'''
-s = []
-map(lambda x: s.extend(res_sample[x]), res_sample.keys())
-len(set(s))
-'''
+
+# filter by peaks
+peaks = json.load(open('peaks'))
+f=[]
+for g in genes:
+    f.extend([k+':'+ g for k in peaks[g].keys() if peaks[g][k] > 4.0])
+
+f_set = set(f)
+f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)
+res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
+#rs = convert_to_set(res_sample)
+res_genes = get_gene_sample(res_sample, 'f_res_sample')
+rg_peaks = convert_to_set(res_genes)
+s = getsamples(res_sample)
+[co_peaks, co_peaks_exp]= run_co_occur(rg_peaks, rg_peaks.keys(), s, 'co_peaks')
+
+
+
+
+
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
     set1 = gene_sample_set[gene1].intersection(samples)

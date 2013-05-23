@@ -136,7 +136,7 @@ prod = map(lambda x: ents[x] * mut_rate[x], range(0, len(d)))
 div = map(lambda x: ents[x] / mut_rate[x], range(0, len(d)))
     
 
-plt.scatter(ents[0:30], mut_rate[0:30]) 
+#plt.scatter(ents[0:30], mut_rate[0:30]) 
 f = [d[i] for i in range(0,len(d)) if mut_rate[i] >= .2 and ents[i]<2]
 
 
@@ -155,12 +155,13 @@ plt.savefig('hack.png')
 
 
 m_mut = sorted(counts.iteritems(), key = lambda x: sum(x[1].values()), reverse=True)
-r_mut = map(lambda x: x[0], m_mut)
+'''r_mut = map(lambda x: x[0], m_mut)
+
 distances = {}
 for g in genes:
     distances[g] = r_mut.index(g) - d.index(g) 
 e = sorted(distances.iteritems(), key = operator.itemgetter(1), reverse=True)
-
+'''
 
 def entr(v):
     return sum(map(lambda x: (float(x)/1000) * np.log(float(x)/1000), v))
