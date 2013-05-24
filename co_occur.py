@@ -31,6 +31,7 @@ class Rows(object):
 
 f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 rows = map(lambda x: Rows(x), f)
+rows = filter(lambda x: x not in badrows, rows)
 
 bp_to_aa = json.load(open('bp_to_aa'))
 # convert rows to amino acids, then run the co_occurrence stuff
@@ -42,6 +43,8 @@ for r in rows:
         print r.chrom +':' + r.start_position
         badrows.append(r)
 badrows = set(badrows)
+
+rows = filter(lambda x: x not in badrows, rows)
 print "about to make matrix...."
 
 
@@ -176,6 +179,7 @@ def run_co_occur(gene_sample_set, genes, samples, outputfile = 'co_occur_np'):
     np.save(open(outputfile+'_exp', 'w'), co_exp)
     return [co, co_exp]
 
+
 global all_samples
 all_samples = set(map(lambda x: x.tumor_sample_barcode, rows))
 
@@ -249,16 +253,19 @@ co_gbm = run_co_occur(rg_gbm, rg_gbm.keys(), all_samples, 'filter_gene_co_gbm')
 peaks = json.load(open('peaks'))
 f=[]
 for g in genes:
-    f.extend([k+':'+ g for k in peaks[g].keys() if peaks[g][k] > 4.0])
+    f.extend([k+':'+ g for k in peaks[g].keys() if peaks[g][k] > 7.0])
 
 f_set = set(f)
-f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)
+f_rows = filter(lambda x: str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)
+
+'''
 res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
 #rs = convert_to_set(res_sample)
 res_genes = get_gene_sample(res_sample, 'f_res_sample')
 rg_peaks = convert_to_set(res_genes)
 s = getsamples(res_sample)
 [co_peaks, co_peaks_exp]= run_co_occur(rg_peaks, rg_peaks.keys(), s, 'co_peaks')
+'''
 
 [co_peaks, co_peaks_exp, rg] = make_co_occur(f_rows)
 
@@ -278,7 +285,51 @@ for g in rg.keys():
     foo = filter(lambda x: g in x, uniques.values())
     top_excluded[g] = len(foo)
 
-#do rectangular co_occur; top residue genes by all genes
+
+'''
+do rectangular co_occur; top residue genes by all genes
+
+frows vs rows
+
+'''
+peak_rows = f_rows
+high_peak_genes = rg.keys()
+co_re = np.empty(len(high_peak_genes) * len(genes)).reshape(len(genes), len(high_peak_genes))
+co_re_exp = np.empty(len(high_peak_genes) * len(genes)).reshape(len(genes), len(high_peak_genes))
+rg_peaks = convert_to_set(get_gene_sample(get_snp_sample_matrix(peak_rows)))
+rg_all = convert_to_set(get_gene_sample(get_snp_sample_matrix(rows)))
+s_all = getsamples(rg_all)
+
+
+for i,g in enumerate(rg_all.keys()):
+    set1 = rg_all[g]
+    for j,h in enumerate(rg_peaks.keys()):
+        set2 = rg_peaks[h]
+        co_re[i,j] = len(set1.intersection(set2))
+        co_re_exp[i,j] = len(set1) * len(set2)/float(len(s_all))
+
+'''
+run uniques for rectangular co_occur
+
+which genes in all the rows occur the least with the peak residue genes
+'''
+uniques = {}
+for i,g in enumerate(rg_all.keys()):
+    gene_co = co_re[i]
+    gene_exp = co_re_exp[i]
+    foo = np.where(gene_co < gene_exp)
+    bar = np.where(gene_exp >= 1.0)
+    foobar = set(foo[0]).intersection(set(bar[0]))
+    #foobar = set(foo[0])
+    uniques[g] = map(lambda x: rg_peaks.keys()[x], list(foobar))
+    uniques[g].append(g)
+
+
+top_excluded = {}
+for g in rg_all.keys():
+    foo = filter(lambda x: g in x, uniques.values())
+    top_excluded[g] = len(foo)
+
 
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
@@ -288,7 +339,7 @@ def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
     n = len(sam)
     return [n, sam]
 
-def get_co2(gene1, gene_sample_set= snp_sample_set, samples=set(s), genes = f, co=co_r):
+def get_co2(gene1, gene_sample_set= snp_sample_set, samples=set(s), genes = f, co=co_re):
     a =np.where(co[genes.index(gene1)] >0)
     g = map(lambda x: genes[int(x)], a[0])
     return g
