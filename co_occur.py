@@ -31,7 +31,6 @@ class Rows(object):
 
 f = filter(lambda x: x.variant_classification in first_pass_mutations, m)
 rows = map(lambda x: Rows(x), f)
-rows = filter(lambda x: x not in badrows, rows)
 
 bp_to_aa = json.load(open('bp_to_aa'))
 # convert rows to amino acids, then run the co_occurrence stuff
@@ -45,6 +44,8 @@ for r in rows:
 badrows = set(badrows)
 
 rows = filter(lambda x: x not in badrows, rows)
+
+
 print "about to make matrix...."
 
 
