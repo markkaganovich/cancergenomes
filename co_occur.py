@@ -331,6 +331,8 @@ for g in rg_all.keys():
     foo = filter(lambda x: g in x, uniques.values())
     top_excluded[g] = len(foo)
 
+a = sorted(top_excluded.iteritems(), key = operator.itemgetter(1), reverse=True)
+oncos = map(lambda x: x[0], a)
 
 
 def get_co(gene1, gene2, gene_sample_set = gene_sample_set, samples = set(s)):
