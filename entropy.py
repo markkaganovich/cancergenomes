@@ -127,6 +127,33 @@ for g in genes:
         hack_max[g] = max(v/np.mean(v))   
     
 
+poisson_residues = {}
+for g in counts_aa:
+    m = sum(counts_aa[g].values())
+    try:
+        p = float(m) / prtn_len[g]
+    except KeyError:
+        continue
+    for aa in counts_aa[g]:
+        if counts_aa[g][aa] > 1:
+            poisson_residues[g+':'+aa] = poisson(counts_aa[g][aa], p)
+
+poisson_by_gene = {}
+for g in counts_aa:
+    print g
+    f = filter(lambda x: x.split(':')[0] == g, poisson_residues)
+    poisson_by_gene[g] = np.product(map(lambda x: poisson_residues[x], f))
+
+
+poisson_by_gene = {}
+for k in poisson_residues:
+    g = k.split(':')[0]
+    if g in poisson_by_gene.keys():
+        poisson_by_gene[g].append(poisson_residues[k])
+    else:
+        poisson_by_gene[g] = [poisson_residues[k]]
+
+
 
 a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
