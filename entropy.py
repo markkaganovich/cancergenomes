@@ -155,6 +155,13 @@ for k in poisson_residues:
 
 
 
+for g in counts_aa:     
+    try:        
+        gi[g] = genes_in_poission.index(g)
+    except ValueError:
+        continue
+
+
 a = sorted(hack_max.iteritems(), key = operator.itemgetter(1), reverse=True)
 ents = map(lambda x: x[1], a)
 d = map(lambda x: x[0], a)
