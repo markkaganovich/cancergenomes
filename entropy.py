@@ -174,6 +174,8 @@ div = map(lambda x: ents[x] / mut_rate[x], range(0, len(d)))
 f = [d[i] for i in range(0,len(d)) if mut_rate[i] >= .2 and ents[i]<2]
 
 
+
+
 '''
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -220,7 +222,7 @@ def make_counts_aa(genes, counts):
                 silent.append(c)
     return counts_aa
 
-
+'''
 
 binomial_genes = {}
 for g in genes:
@@ -231,6 +233,8 @@ for g in genes:
     except KeyError:
         continue
     binomial_genes[g] = map(binomial, [n]*len(v), v, [p]*len(v))
+'''
+
 
 
 
