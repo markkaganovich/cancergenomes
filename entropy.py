@@ -138,13 +138,7 @@ for g in counts_aa:
         if counts_aa[g][aa] > 1:
             poisson_residues[g+':'+aa] = poisson(counts_aa[g][aa], p)
 
-poisson_by_gene = {}
-for g in counts_aa:
-    print g
-    f = filter(lambda x: x.split(':')[0] == g, poisson_residues)
-    poisson_by_gene[g] = np.product(map(lambda x: poisson_residues[x], f))
-
-
+'''
 poisson_by_gene = {}
 for k in poisson_residues:
     g = k.split(':')[0]
@@ -152,7 +146,7 @@ for k in poisson_residues:
         poisson_by_gene[g].append(poisson_residues[k])
     else:
         poisson_by_gene[g] = [poisson_residues[k]]
-
+'''
 
 
 for g in counts_aa:     
@@ -235,10 +229,44 @@ for g in genes:
     binomial_genes[g] = map(binomial, [n]*len(v), v, [p]*len(v))
 '''
 
+s = set(poisson_residues.keys())
+peak_rows = filter(lambda x: x.hugo_symbol +':'+str(x.residue['pos']) in s, rows)
+types = list(set(map(lambda x: x.cancer_type, rows)))
+a = sorted(poisson_residues.iteritems(), key = operator.itemgetter(1))
+residues = map(lambda x: x[0], a)
+residue_by_type = {}
 
+singletons = filter(lambda x: x.hugo_symbol +':'+str(x.residue['pos']) not in s, rows)
 
+#initialize
+for r in residues:
+    residue_by_type[r] = {}
+    for t in types:
+        residue_by_type[r][t] = 0
 
+for p in peak_rows:
+    r = p.hugo_symbol +':' + str(p.residue['pos'])
+    print r
+    if r in residues:
+        t = p.cancer_type
+        residue_by_type[r][t] = residue_by_type[r][t] + 1
 
+single_types = {}
+for t in types:
+    single_types[t] = 0
+
+for s in singletons:
+    single_types[s.cancer_type] = single_types[s.cancer_type] + 1
+
+#print to file
+output = open('residue_by_type','w')
+for r in residues:
+    l = ''
+    for t in types:
+        l = l+str(residue_by_type[r][t]) + ','
+    l = l.strip(',')
+    l = l+'\n'
+    output.write(l)
 
 
 
