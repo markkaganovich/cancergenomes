@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
 import math
-
+import scipy
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 
@@ -238,6 +238,7 @@ residue_by_type = {}
 
 singletons = filter(lambda x: x.hugo_symbol +':'+str(x.residue['pos']) not in s, rows)
 
+
 #initialize
 for r in residues:
     residue_by_type[r] = {}
@@ -251,6 +252,24 @@ for p in peak_rows:
         t = p.cancer_type
         residue_by_type[r][t] = residue_by_type[r][t] + 1
 
+
+res2 = filter(lambda x: sum(residue_by_type[x].values()) == 2, residue_by_type.keys())
+res3 = filter(lambda x: sum(residue_by_type[x].values()) == 3, residue_by_type.keys())
+res4 = filter(lambda x: sum(residue_by_type[x].values()) == 4, residue_by_type.keys())
+res5 = filter(lambda x: sum(residue_by_type[x].values()) == 5, residue_by_type.keys())
+res6 = filter(lambda x: sum(residue_by_type[x].values()) == 6, residue_by_type.keys())
+res7 = filter(lambda x: sum(residue_by_type[x].values()) == 7, residue_by_type.keys())
+res8plus = filter(lambda x: sum(residue_by_type[x].values()) > 7, residue_by_type.keys()) 
+
+res = res8plus
+res_type = {}
+for r in res:
+    total = sum(residue_by_type[r].values())
+    res_type[r] = {}
+    for t in types:
+        res_type[r][t] = float(residue_by_type[r][t])/ total
+
+
 single_types = {}
 for t in types:
     single_types[t] = 0
@@ -259,11 +278,56 @@ for s in singletons:
     single_types[s.cancer_type] = single_types[s.cancer_type] + 1
 
 #print to file
-output = open('residue_by_type','w')
-for r in residues:
-    l = ''
+output = open('residue_by_type_frac','w')
+output = open('res_type_8plus', 'w')
+c = '\t'
+for t in types:
+    c = c+t+','
+
+output.write(c.strip(',')+'\n')
+for r in res:
+    l = str(r) + ','
     for t in types:
-        l = l+str(residue_by_type[r][t]) + ','
+        l = l+str(res_type[r][t]) + ','
+    l = l.strip(',')
+    l = l+'\n'
+    output.write(l)
+
+total = sum(single_types.values())
+single_types_frac = {}
+for t in single_types:
+    single_types_frac[t] = single_types[t]/float(total)
+
+cancer_distr = {}
+for t in types:
+    cancer_distr[t] = 0
+
+for r in rows:
+    cancer_distr[r.cancer_type] = cancer_distr[r.cancer_type] + 1
+
+total = sum(cancer_distr.values())
+for t in types:
+    cancer_distr[t] = float(cancer_distr[t])/total
+
+
+res_type_norm = {}
+for r in res:
+    res_type_norm[r] = {}
+    for t in types:
+        res_type_norm[r][t] = res_type[r][t]/single_types_frac[t]
+    
+
+#print to file
+output = open('res_type_8plus_norm', 'w')
+c = '\t'
+for t in types:
+    c = c+t+','
+
+output.write(c.strip(',')+'\n')
+for r in res:
+    l = str(r) + ','
+    for t in types:
+        l = l+str(res_type_norm[r][t]) + ','
     l = l.strip(',')
     l = l+'\n'
     output.write(l)
