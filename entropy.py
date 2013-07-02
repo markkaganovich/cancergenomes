@@ -332,5 +332,25 @@ for r in res:
     l = l+'\n'
     output.write(l)
 
+def table(data):
+    output = {}
+    print type(data)
+    if type(data) is list:
+        for t in data:
+            output[t] = 0
+        for t in data:
+            output[t] = output[t] + 1 
+    
+    if type(data) == dict:     
+        for t in data.values():
+            output[t] = 0
+        for k in data.keys():
+            output[data[k]] = output[data[k]] + 1
+    
+    return output
+
+
+
+
 
 
