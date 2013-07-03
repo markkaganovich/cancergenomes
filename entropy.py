@@ -151,7 +151,7 @@ for k in poisson_residues:
 
 for g in counts_aa:     
     try:        
-        gi[g] = genes_in_poission.index(g)
+        gi[g] = genes_in_poisson.index(g)
     except ValueError:
         continue
 
