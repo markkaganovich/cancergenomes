@@ -1,0 +1,124 @@
+
+APC
+ARF1
+BRCA1
+BRCA2
+CDKN1B
+Kip2
+DLD
+
+CDKN2A
+TP53
+TP63 
+TP73 
+PTEN
+
+SDHB
+
+SDHD
+SFRP1
+
+TCF21
+TIG1
+VHL
+
+
+first 3 columns are oncogenes, next are tumor suppressors
+
+"ABL1 EVI1 MYC APC IL2 TNFAIP3 
+ABL2 EWSR1 MYCL1 ARHGEF12 JAK2 TP53 
+AKT1 FEV MYCN ATM MAP2K4 TSC1 
+AKT2 FGFR1 NCOA4 BCL11B MDM4 TSC2 
+ATF1 FGFR1OP NFKB2 BLM MEN1 VHL 
+BCL11A FGFR2 NRAS BMPR1A MLH1 WRN 
+BCL2 FUS NTRK1 BRCA1 MSH2 WT1 
+BCL3 GOLGA5 NUP214 BRCA2 NF1 
+BCL6 GOPC PAX8 CARS NF2 
+BCR HMGA1 PDGFB CBFA2T3 NOTCH1 
+BRAF HMGA2 PIK3CA CDH1 NPM1 
+CARD11 HRAS PIM1 CDH11 NR4A3 
+CBLB IRF4 PLAG1 CDK6 NUP98 
+CBLC JUN PPARG CDKN2C PALB2 
+CCND1 KIT PTPN11 CEBPA PML 
+CCND2 KRAS RAF1 CHEK2 PTEN 
+CCND3 LCK REL CREB1 RB1 
+CDX2 LMO2 RET CREBBP RUNX1 
+CTNNB1 MAF ROS1 CYLD SDHB 
+DDB2 MAFB SMO DDX5 SDHD 
+DDIT3 MAML2 SS18 EXT1 SMARCA4 
+DDX6 MDM2 TCL1A EXT2 SMARCB1 
+DEK MET TET2 FBXW7 SOCS1 
+EGFR MITF TFG FH STK11 
+ELK4 MLL TLX1 FLT3 SUFU 
+ERBB2 MPL TPR FOXP1 SUZ12 
+ETV4 MYB USP6 GPC3 SYK 
+ETV6"       
+
+
+
+
+
+>>> co_f[rg.keys().index('CDKN2A'), rg.keys().index('CDKN2A')]
+2.0
+>>> co[genes.index('CDKN2A'), genes.index('CDKN2A')]          
+143.0
+>>> co_f[rg.keys().index('TP53'), rg.keys().index('TP53')]    
+74.0
+>>> co_f[rg.keys().index('PTEN'), rg.keys().index('PTEN')]
+75.0
+>>> co_f[rg.keys().index('PTEN'), rg.keys().index('PDGFRA')]
+2.0
+>>> co_f[rg.keys().index('PDGFRA'), rg.keys().index('PDGFRA')]
+9.0
+
+>>> co[genes.index('PDGFRA'), genes.index('PDGFRA')]          
+158.0
+>>> co[genes.index('EGFR'), genes.index('EGFR')]    
+248.0
+>>> co_f[rg.keys().index('EGFR'), rg.keys().index('EGFR')]    
+74.0
+>>> co_f[rg.keys().index('EGFR'), rg.keys().index('PTEN')]
+24.0
+>>> co_f[rg.keys().index('PIK3R1'), rg.keys().index('PTEN')]
+4.0
+>>> co_f[rg.keys().index('PIK3R1'), rg.keys().index('PIK3R1')]
+19.0
+>>> co[genes.index('PIK3R1'), genes.index('PIK3R1')]          
+140.0
+>>> 
+
+
+>>> co_f1[rg.keys().index('TP53'), rg.keys().index('TP53')]  
+1339.0
+>>> co_f1[rg.keys().index('TP53'), rg.keys().index('MDM2')]
+8.0
+>>> co_f1[rg.keys().index('MDM2'), rg.keys().index('MDM2')]
+25.0
+>>> co_f1[rg.keys().index('TP53'), rg.keys().index('CDKN2A')]
+49.0
+>>> co_f1[rg.keys().index('CDKN2A'), rg.keys().index('CDKN2A')]
+85.0
+>>> co_f1[rg.keys().index('KRAS'), rg.keys().index('BRAF')]    
+13.0
+>>> co_f1[rg.keys().index('BRAF'), rg.keys().index('BRAF')]
+217.0
+>>> co_f1[rg.keys().index('KRAS'), rg.keys().index('KRAS')]    
+313.0
+>>> 313.0/3321 *217
+20.451972297500753
+>>> co_f1[rg.keys().index('PTEN'), rg.keys().index('PTEN')]
+249.0
+>>> co_f1[rg.keys().index('PTEN'), rg.keys().index('PIK3R1')]
+11.0
+>>> co_f1[rg.keys().index('PIK3R1'), rg.keys().index('PIK3R1')]
+36.0
+>>> 36.0/3321 *249                                             
+2.6991869918699187
+
+
+
+{u'LUAD': 6, u'RECTAL': 1, u'KIRP': 1, u'GBM': 5, u'COLON': 34, u'SKCM': 113}
+
+
+
+
