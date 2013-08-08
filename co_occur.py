@@ -234,7 +234,7 @@ f_set = set(f)
 f_rows = filter(lambda x: x not in badrows and str(x.residue['pos']) +':' +x.hugo_symbol in f_set, rows)    
 
 def make_co_occur(frows):
-    res_sample = get_snp_sample_matrix(f_rows, 'f_rows.snp_sample')
+    res_sample = get_snp_sample_matrix(frows, 'f_rows.snp_sample')
 #rs = convert_to_set(res_sample)
     res_genes = get_gene_sample(res_sample, 'f_res_sample')
     rg = convert_to_set(res_genes)
@@ -268,7 +268,7 @@ s = getsamples(res_sample)
 [co_peaks, co_peaks_exp]= run_co_occur(rg_peaks, rg_peaks.keys(), s, 'co_peaks')
 '''
 
-[co_peaks, co_peaks_exp, rg] = make_co_occur(f_rows)
+[co_peaks, co_peaks_exp, rg] = make_co_occur(rows)
 
 uniques = {}
 for i,g in enumerate(rg.keys()):
@@ -293,8 +293,12 @@ do rectangular co_occur; top residue genes by all genes
 frows vs rows
 
 '''
-peak_rows = f_rows
+[co_peaks, co_peaks_exp, rg] = make_co_occur(peak_rows)
+#peak_rows = f_rows
 high_peak_genes = rg.keys()
+
+peak_rows = mut_rows 
+high_peak_genes = list(set(map(lambda x: x.hugo_symbol, peak_rows)))
 co_re = np.empty(len(high_peak_genes) * len(genes)).reshape(len(genes), len(high_peak_genes))
 co_re_exp = np.empty(len(high_peak_genes) * len(genes)).reshape(len(genes), len(high_peak_genes))
 rg_peaks = convert_to_set(get_gene_sample(get_snp_sample_matrix(peak_rows)))

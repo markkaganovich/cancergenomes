@@ -27,13 +27,6 @@ def find_fieldnames(infile, not_header_flag = None):
 
 def synonyms(fieldname):
 	'''
-	try:
-		col = syn[fieldname.lower()]
-	except KeyError:
-		col = fieldname.lower()
-	return col
-	'''
-	'''
 	return key in syn table that is synonyms with the given fieldname
 	'''
 	col = None
