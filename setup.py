@@ -139,3 +139,19 @@ umns = primary_keys)
 # db_cleanup.py
 
 
+#######
+#
+# convert bases to residues using the polyphen db
+#
+#
+db = create_engine('sqlite:///polyphen-2.2.2-whess-2011_12.sqlite') 
+metadata = MetaData(db)
+features = Table('features', metadata, autoload=True)) 
+a = features.select().execute().fetchone()
+a.chrom
+a.chrpos
+a.pos #amino acid position
+
+
+
+
