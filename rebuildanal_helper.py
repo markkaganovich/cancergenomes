@@ -1,5 +1,3 @@
-rebuildanal_helper.py
-
 def get_table(chrom, pos):
 	pos = int(pos)
 	chrom = chrom.strip(' ')
@@ -12,7 +10,7 @@ def get_table(chrom, pos):
 	table_ranges = map(lambda x: (int(x.split('_')[1]), int(x.split('_')[2])), tables)
 	select_range = filter(lambda x: pos >= x[0] and pos <= x[1], table_ranges)[0]
 	select_table = 'chr' + chrom + '_' + str(select_range[0])+ '_' + str(select_range[1])
-	table = cursor.execute("select COORD2, AAPOS2 from " + select_table).fetchall()
+	table = cursor.execute("select COORD2, AAPOS2 from " + select_table + " where SNP = 'Reference'").fetchall()
 	table_dic = {}
 	for t in table:
 		table_dic[t[0]] = t[1]
@@ -21,6 +19,7 @@ def get_table(chrom, pos):
 
 
 def get_snp_to_aa(rows):
+	snp_to_aa = {}
 	r = rows[1]
 	curr_chrom = str(r.chrom).strip(' ')
 	pos = int(r.start_position) 
