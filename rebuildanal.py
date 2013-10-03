@@ -92,8 +92,7 @@ while sim < 1000:
         	mut = random.randint(0, sum(counts_aa['BRAF'].values()) - sum_mut) 
         	sum_mut += mut
         	null.append(mut)
-
-    peak_poisson_values.append(map(lambda x: poisson(x, sum(null)), null))
+	peak_poisson_values.append(map(lambda x: poisson(x, sum(null)), null))
     sim += 1
 
 
