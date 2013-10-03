@@ -1,3 +1,5 @@
+
+
 def get_table(chrom, pos):
 	pos = int(pos)
 	chrom = chrom.strip(' ')
@@ -39,4 +41,18 @@ def get_snp_to_aa(rows):
 				snp_to_aa[chrom +':' + str(pos)] = r.hugo_symbol + ':' + str(aa)
 			print chrom + ':' + str(pos)
 	return snp_to_aa
+
+
+def make_counts_aa(rows):
+	counts_aa = {}
+	for r in rows:
+		if r.hugo_symbol not in counts_aa.keys():
+			counts_aa[r.hugo_symbol] = {}
+		if r.residue in counts_aa[r.hugo_symbol].keys():
+			 counts_aa[r.hugo_symbol][r.residue] += 1
+		else:
+			counts_aa[r.hugo_symbol][r.residue] = 1
+	return counts_aa
+
+
 

@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
 import rebuildanal_helper
+import math
+import random
+from collections import Counter
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 metadata = MetaData(db)
@@ -46,6 +49,63 @@ if 'counts_aa' in os.listdir('./'):
 else:
 	counts_aa = rebuildanal_helper.make_counts_aa(tcga_residues)
 
+
+#########################################################################################
+'''
+poission analysis of peaks per genes
+
+'''
+
+prtn_len = json.load(open('prtn_len'))
+
+def poisson(k, l):
+    try:
+        p = math.pow(l, k)/math.factorial(k) * np.exp(-1*l)
+    except OverflowError:
+        p = 0
+    return p
+
+
+poisson_residues = {}
+for g in counts_aa:
+    m = sum(counts_aa[g].values())
+    try:
+        p = float(m) / prtn_len[g]
+    except KeyError:
+        continue
+    for aa in counts_aa[g]:
+        if counts_aa[g][aa] > 1:
+            poisson_residues[g+':'+aa] = poisson(counts_aa[g][aa], p)
+
+
+avg = numpy.array([0.0] * prtn_len['BRAF'])
+
+peak_poisson_values = []
+while sim < 1000:
+	null = []
+	sum_mut = 0
+	for p in range(1, prtn_len['BRAF']):
+   		if sum_mut == sum(counts_aa['BRAF'].values()):
+        	break
+    	else:
+        	mut = random.randint(0, sum(counts_aa['BRAF'].values()) - sum_mut) 
+        	sum_mut += mut
+        	null.append(mut)
+    peak_poisson_values.append(map(lambda x: poisson(x, sum(null)), null))
+    sim += 1
+
+
+sim_peaks = []:
+peaks = []
+while sim < 1000:
+	gene_muts = sum(counts_aa['BRAF'].values())
+	pos = []
+	for p in range(1, gene_muts):
+		# pick a position randomly
+		pos.append(random.randint(0, prtn_len['BRAF']))
+	sim +=1
+	counts = Counter(pos)
+	peaks.append(max(pos.values()))	
 
 
 
