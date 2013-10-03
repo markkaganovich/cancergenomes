@@ -102,24 +102,25 @@ peaks_max = []
 peaks_mean = []
 peaks_sd = []
 sim = 0
-while sim < 10000:
-	gene_muts = sum(counts_aa['BRAF'].values())
+while sim < 1E5:
+	gene_muts = sum(counts_aa['TP53'].values())
 	pos = []
 	for p in range(1, gene_muts):
-		# pick a position randomly
-		pos.append(random.randint(0, prtn_len['BRAF']))
+		pos.append(random.randint(0, prtn_len['TP53']))
 	sim +=1
 	counts = Counter(pos)
 	peaks_max.append(max(counts.values()))	
-	#peaks_sd.append(numpy.std(counts.values()))
-	#peaks_mean.append(numpy.mean(counts.values()))
-s = numpy.std(peaks_max)
-m = numpy.mean(peaks_max)
 
-(numpy.max(counts_aa['BRAF'].values()) - m) / s
+std = numpy.std(peaks_max)
+mean_peak = numpy.mean(peaks_max)
 
+metric = (numpy.max(counts_aa['BRAF'].values()) - mean_peak) / std
 
+for g in genes
 
+	
+
+c = Counter(peaks_max)
 
 
 
