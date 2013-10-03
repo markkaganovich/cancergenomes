@@ -97,26 +97,26 @@ while sim < 1000:
     sim += 1
 
 '''
-sim_peaks = []
-peaks_max = []
-peaks_mean = []
-peaks_sd = []
-sim = 0
-while sim < 1E5:
-	gene_muts = sum(counts_aa['TP53'].values())
-	pos = []
-	for p in range(1, gene_muts):
-		pos.append(random.randint(0, prtn_len['TP53']))
-	sim +=1
-	counts = Counter(pos)
-	peaks_max.append(max(counts.values()))	
 
-std = numpy.std(peaks_max)
-mean_peak = numpy.mean(peaks_max)
+def sim(gene):
+	peaks_max = []
+	sim = 0
+	while sim < 1E4:
+		gene_muts = sum(counts_aa[gene].values())
+		pos = []
+		for p in range(1, gene_muts):
+			pos.append(random.randint(0, prtn_len['KIF3B']))
+		sim +=1
+		counts = Counter(pos)
+		peaks_max.append(max(counts.values()))	
+	std = numpy.std(peaks_max)
+	mean_peak = numpy.mean(peaks_max)
+	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
+	return metric
 
-metric = (numpy.max(counts_aa['BRAF'].values()) - mean_peak) / std
-
-for g in genes
+peak_stds = {}
+for g in genes:
+	peak_stds[g] = sim(gene)
 
 	
 
