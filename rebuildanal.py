@@ -105,7 +105,7 @@ def sim(gene):
 		gene_muts = sum(counts_aa[gene].values())
 		pos = []
 		for p in range(1, gene_muts):
-			pos.append(random.randint(0, prtn_len['KIF3B']))
+			pos.append(random.randint(0, prtn_len[g]))
 		sim +=1
 		counts = Counter(pos)
 		peaks_max.append(max(counts.values()))	
@@ -116,8 +116,11 @@ def sim(gene):
 
 peak_stds = {}
 for g in genes:
-	peak_stds[g] = sim(gene)
-
+	print g
+	try: 
+		peak_stds[g] = sim(gene)
+	except KeyError:
+		continue
 	
 
 c = Counter(peaks_max)
