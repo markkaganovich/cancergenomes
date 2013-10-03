@@ -16,6 +16,7 @@ from pysqlite2 import dbapi2 as sqlite
 import rebuildanal_helper
 import math
 import random
+import numpy
 from collections import Counter
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
@@ -86,7 +87,7 @@ while sim < 1000:
 	sum_mut = 0
 	for p in range(1, prtn_len['BRAF']):
    		if sum_mut == sum(counts_aa['BRAF'].values()):
-        	break
+   			break
     	else:
         	mut = random.randint(0, sum(counts_aa['BRAF'].values()) - sum_mut) 
         	sum_mut += mut
@@ -95,9 +96,12 @@ while sim < 1000:
     sim += 1
 
 
-sim_peaks = []:
-peaks = []
-while sim < 1000:
+sim_peaks = []
+peaks_max = []
+peaks_mean = []
+peaks_sd = []
+sim = 0
+while sim < 10000:
 	gene_muts = sum(counts_aa['BRAF'].values())
 	pos = []
 	for p in range(1, gene_muts):
@@ -105,7 +109,14 @@ while sim < 1000:
 		pos.append(random.randint(0, prtn_len['BRAF']))
 	sim +=1
 	counts = Counter(pos)
-	peaks.append(max(pos.values()))	
+	peaks_max.append(max(counts.values()))	
+	#peaks_sd.append(numpy.std(counts.values()))
+	#peaks_mean.append(numpy.mean(counts.values()))
+s = numpy.std(peaks_max)
+m = numpy.mean(peaks_max)
+
+(numpy.max(counts_aa['BRAF'].values()) - m) / s
+
 
 
 
