@@ -81,6 +81,7 @@ for g in counts_aa:
 
 avg = numpy.array([0.0] * prtn_len['BRAF'])
 
+'''
 peak_poisson_values = []
 while sim < 1000:
 	null = []
@@ -95,7 +96,7 @@ while sim < 1000:
 	peak_poisson_values.append(map(lambda x: poisson(x, sum(null)), null))
     sim += 1
 
-
+'''
 sim_peaks = []
 peaks_max = []
 peaks_mean = []
