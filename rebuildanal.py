@@ -18,6 +18,8 @@ import math
 import random
 import numpy
 from collections import Counter
+import Queue
+import threading
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 metadata = MetaData(db)
@@ -114,16 +116,32 @@ def sim(gene):
 	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
 	return metric
 
-peak_stds = {}
-for g in genes:
-	print g
-	try: 
-		peak_stds[g] = sim(gene)
-	except KeyError:
-		continue
-	
 
-c = Counter(peaks_max)
+def do_work(item):
+	print "Worker running: %s" % item
+	peak_stds[item] = sim(item)
+	return peak_stds
+
+def worker():
+    while True:
+        item = q.get()
+        do_work(item)
+        q.task_done()
+
+q = Queue.Queue()
+for i in range(15):
+     t = threading.Thread(target=worker)
+     t.daemon = True
+     t.start()
+
+for gene in genes:
+	if gene in counts_aa.keys() and len(counts_aa[g].values()) > 4:
+		print "Queuing %s" % gene
+		q.put(gene)
+
+q.join()
+
+json.dump(peak_stds, open('peak_stds', 'w'))
 
 
 
