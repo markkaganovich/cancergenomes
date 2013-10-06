@@ -120,14 +120,11 @@ def sim(gene):
 output = open('sim_output', 'w')
 logging.basicConfig(filename='simulations.log',level=logging.DEBUG)
 
-logging.info('So should this')
-
-
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
 	#peak_stds[item] = result
-	logging.info(str(item) + ' : ' + str(result[0]) + str(result[1]) + str(result[2]) + '\n')
+	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]) + '\n')
 	return result
 	
 
@@ -143,7 +140,7 @@ for i in range(15):
      t.daemon = True
      t.start()
 
-for gene in genes[0:16]:
+for gene in genes:
 	if gene in counts_aa.keys() and len(counts_aa[g].values()) > 4:
 		print "Queuing %s" % gene
 		q.put(gene)
