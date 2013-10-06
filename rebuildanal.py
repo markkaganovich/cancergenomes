@@ -137,7 +137,7 @@ for i in range(15):
      t.daemon = True
      t.start()
 
-for gene in genes:
+for gene in genes[0:200]:
 	if gene in counts_aa.keys() and len(counts_aa[g].values()) > 4:
 		print "Queuing %s" % gene
 		q.put(gene)
