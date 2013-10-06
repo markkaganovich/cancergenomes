@@ -116,9 +116,9 @@ def sim(gene):
 	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
 	return metric
 
-output = open('sim_output', 'w')
+#output = open('sim_output', 'w')
 
-def do_work(item):
+def do_work(item, output):
 	print "Worker running: %s" % item
 	result = sim(item)
 	#peak_stds[item] = result
@@ -128,7 +128,9 @@ def do_work(item):
 def worker():
     while True:
         item = q.get()
-        do_work(item)
+        output = open('sim_output')
+        do_work(item, output)
+        output.close()
         q.task_done()
 
 q = Queue.Queue()
