@@ -121,7 +121,7 @@ output = open('sim_output', 'w')
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
-	peak_stds[item] = result
+	#peak_stds[item] = result
 	output.write('%s : %s', item, result)
 	
 
@@ -144,7 +144,7 @@ for gene in genes[0:200]:
 
 q.join()
 
-json.dump(peak_stds, open('peak_stds', 'w'))
+#json.dump(peak_stds, open('peak_stds', 'w'))
 
 
 
