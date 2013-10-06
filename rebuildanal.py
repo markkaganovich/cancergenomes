@@ -123,6 +123,7 @@ def do_work(item):
 	result = sim(item)
 	#peak_stds[item] = result
 	output.write(str(item) + ' : ' + str(result) + '\n')
+	return result
 	
 
 def worker():
@@ -138,7 +139,7 @@ for i in range(15):
      t.daemon = True
      t.start()
 
-for gene in genes[0:200]:
+for gene in genes[0:16]:
 	if gene in counts_aa.keys() and len(counts_aa[g].values()) > 4:
 		print "Queuing %s" % gene
 		q.put(gene)
