@@ -20,6 +20,7 @@ import numpy
 from collections import Counter
 import Queue
 import threading
+import logging
 
 db = create_engine('sqlite:///tcga_somatic.db', echo = False)
 metadata = MetaData(db)
@@ -114,23 +115,26 @@ def sim(gene):
 	std = numpy.std(peaks_max)
 	mean_peak = numpy.mean(peaks_max)
 	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
-	return metric
+	return mean_peak, std, metric
 
 output = open('sim_output', 'w')
+logging.basicConfig(filename='simulations.log',level=logging.DEBUG)
+
+logging.info('So should this')
+
 
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
 	#peak_stds[item] = result
-	output.write(str(item) + ' : ' + str(result) + '\n')
+	logging.info(str(item) + ' : ' + str(result[0]) + str(result[1]) + str(result[2]) + '\n')
 	return result
 	
 
 def worker():
     while True:
         item = q.get()
-        do_work(item)
-        output.close()
+        do_work(item)	
         q.task_done()
 
 q = Queue.Queue()
