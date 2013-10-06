@@ -116,11 +116,14 @@ def sim(gene):
 	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
 	return metric
 
+output = open('sim_output', 'w')
 
 def do_work(item):
 	print "Worker running: %s" % item
-	peak_stds[item] = sim(item)
-	return peak_stds
+	result = sim(item)
+	peak_stds[item] = result
+	output.write('%s : %s', item, result)
+	
 
 def worker():
     while True:
@@ -142,6 +145,7 @@ for gene in genes:
 q.join()
 
 json.dump(peak_stds, open('peak_stds', 'w'))
+
 
 
 
