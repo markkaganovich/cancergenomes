@@ -122,7 +122,7 @@ def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
 	#peak_stds[item] = result
-	output.write('{0} : {1}').format(item, result)
+	output.write(str(item) + ' : ' + str(result) + '\n')
 	
 
 def worker():
