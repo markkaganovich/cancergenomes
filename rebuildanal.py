@@ -108,7 +108,7 @@ def sim(gene):
 		gene_muts = sum(counts_aa[gene].values())
 		pos = []
 		for p in range(0, gene_muts):
-			pos.append(random.randint(0, prtn_len[g]))
+			pos.append(random.randint(0, prtn_len[gene]))
 		sim +=1
 		counts = Counter(pos)
 		peaks_max.append(max(counts.values()))	
