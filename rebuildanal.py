@@ -142,7 +142,7 @@ for i in range(10):
      t.start()
 
 for gene in genes:
-	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4:
+	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4 and gene in prtn_len.keys():
 		print "Queuing %s" % gene
 		q.put(gene)
 
