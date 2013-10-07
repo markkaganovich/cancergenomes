@@ -120,7 +120,7 @@ def sim(gene):
 
 logging.basicConfig(filename='simulations4.log',level=logging.DEBUG)
 
-'''
+
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
@@ -136,7 +136,7 @@ def worker():
         q.task_done()
 
 q = Queue.Queue()
-for i in range(15):
+for i in range(10):
      t = threading.Thread(target=worker)
      t.daemon = True
      t.start()
@@ -156,7 +156,7 @@ for gene in genes:
 	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4:
 		result = sim(gene)
 		logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
-
+'''
 
 
 
