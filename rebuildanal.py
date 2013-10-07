@@ -69,7 +69,7 @@ def poisson(k, l):
         p = 0
     return p
 
-
+'''
 poisson_residues = {}
 for g in counts_aa:
     m = sum(counts_aa[g].values())
@@ -83,7 +83,7 @@ for g in counts_aa:
 
 
 avg = numpy.array([0.0] * prtn_len['BRAF'])
-
+'''
 '''
 peak_poisson_values = []
 while sim < 1000:
@@ -107,7 +107,7 @@ def sim(gene):
 	while sim < 1E4:
 		gene_muts = sum(counts_aa[gene].values())
 		pos = []
-		for p in range(1, gene_muts):
+		for p in range(0, gene_muts):
 			pos.append(random.randint(0, prtn_len[g]))
 		sim +=1
 		counts = Counter(pos)
@@ -117,14 +117,14 @@ def sim(gene):
 	metric = (numpy.max(counts_aa[gene].values()) - mean_peak) / std
 	return mean_peak, std, metric
 
-output = open('sim_output', 'w')
-logging.basicConfig(filename='simulations.log',level=logging.DEBUG)
+
+logging.basicConfig(filename='simulations2.log',level=logging.DEBUG)
 
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
 	#peak_stds[item] = result
-	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]) + '\n')
+	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
 	return result
 	
 
@@ -141,7 +141,7 @@ for i in range(15):
      t.start()
 
 for gene in genes:
-	if gene in counts_aa.keys() and len(counts_aa[g].values()) > 4:
+	if gene in counts_aa.keys() and sum(counts_aa[g].values()) > 4:
 		print "Queuing %s" % gene
 		q.put(gene)
 
