@@ -118,7 +118,7 @@ def sim(gene):
 	return mean_peak, std, metric
 
 
-logging.basicConfig(filename='simulations4.log',level=logging.DEBUG)
+logging.basicConfig(filename='simulations5.log',level=logging.DEBUG)
 
 
 def do_work(item):
