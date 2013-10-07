@@ -118,8 +118,9 @@ def sim(gene):
 	return mean_peak, std, metric
 
 
-logging.basicConfig(filename='simulations3.log',level=logging.DEBUG)
+logging.basicConfig(filename='simulations4.log',level=logging.DEBUG)
 
+'''
 def do_work(item):
 	print "Worker running: %s" % item
 	result = sim(item)
@@ -148,6 +149,13 @@ for gene in genes:
 q.join()
 
 #json.dump(peak_stds, open('peak_stds', 'w'))
+
+'''
+
+for gene in genes:
+	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4:
+		result = sim(gene)
+		logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
 
 
 
