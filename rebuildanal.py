@@ -118,7 +118,7 @@ def sim(gene):
 	return mean_peak, std, metric
 
 
-logging.basicConfig(filename='simulations2.log',level=logging.DEBUG)
+logging.basicConfig(filename='simulations3.log',level=logging.DEBUG)
 
 def do_work(item):
 	print "Worker running: %s" % item
