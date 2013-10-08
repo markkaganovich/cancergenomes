@@ -141,8 +141,9 @@ for i in range(10):
      t.daemon = True
      t.start()
 
+sim_genes = json.load(open('sim7genes'))
 for gene in genes:
-	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4 and gene in prtn_len.keys():
+	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4 and gene in prtn_len.keys() and gene not in sim_genes:
 		print "Queuing %s" % gene
 		q.put(gene)
 
