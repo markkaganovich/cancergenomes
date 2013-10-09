@@ -36,6 +36,8 @@ class Rows(object):
 tcga_rows = map(lambda x: Rows(x), m)
 genes = list(set(map(lambda x: x.hugo_symbol, tcga_rows)))    
 
+tcga_nonsilent = map(lambda x: x.variant_classification != 'Silent')
+
 if 'snp_to_aa' in os.listdir('./'):
 	snp_to_aa = json.load(open('snp_to_aa'))
 else:	
@@ -118,7 +120,7 @@ def sim(gene):
 	return mean_peak, std, metric
 
 
-logging.basicConfig(filename='simulations9.log',level=logging.DEBUG)
+logging.basicConfig(filename='simulations.log',level=logging.DEBUG)
 
 
 def do_work(item):
@@ -141,10 +143,10 @@ for i in range(10):
      t.daemon = True
      t.start()
 
-sim7genes = json.load(open('sim7genes'))
-sim8genes = json.load(open('sim8genes'))
+#sim7genes = json.load(open('sim7genes'))
+#sim8genes = json.load(open('sim8genes'))
 for gene in genes:
-	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4 and gene in prtn_len.keys() and gene not in sim7genes and gene not in sim8genes:
+	if gene in counts_aa.keys() and sum(counts_aa[gene].values()) > 4 and gene in prtn_len.keys():
 		print "Queuing %s" % gene
 		q.put(gene)
 
@@ -161,9 +163,34 @@ for gene in genes:
 '''
 
 
+'''
+suppr_types = map(lambda x: x.variant_classification, filter(lambda y: y.hugo_symbol in suppressors, tcga_rows))
+suppr_types[0]
+suppr_types[1]
+from collections import Counter
+suppr_counter = Counter(suppr_types)
+suppr_counter.keuys()
+suppr_counter.keys()
+suppr_counter
+onco_types = map(lambda x: x.variant_classification, filter(lambda y: y.hugo_symbol in oncogenes, tcga_rows))
+onco_counter = Counter(onco_types)
+'''
 
+## read in simulations.log result
 
+'''
+sim_gene_results = {}
+lines = open('simulation.log.copy').readlines()
+simgenes = map(lambda x: x.split('\t')[1].strip('  '), lines)
+for gene in simgenes:
+	sim_gene_results[gene] = {}
 
+for l in lines:
+	tabs = l.split('\t')
+	g = tabs[1].strip('  ')
+	sim_gene_results[g]= {}
+	sim_gene_results[g]['mean'] = float(tabs[2])
+	sim_gene_results[g]['std'] = float(tabs[3])
+	sim_gene_results[g]['metric'] = float(tabs[4].strip('\n'))
 
-
-
+'''
