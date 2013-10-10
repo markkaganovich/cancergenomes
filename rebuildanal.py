@@ -38,6 +38,8 @@ genes = list(set(map(lambda x: x.hugo_symbol, tcga_rows)))
 
 tcga_nonsilent = map(lambda x: x.variant_classification != 'Silent')
 
+tcga_silent = map(lambda x: x.variant_classification == 'Silent')
+
 if 'snp_to_aa' in os.listdir('./'):
 	snp_to_aa = json.load(open('snp_to_aa'))
 else:	
@@ -45,7 +47,7 @@ else:
 
 snps = set(snp_to_aa.keys())
 tcga_residues = []
-for r in tcga_rows:
+for r in tcga_nonsilent:
 	if r.chrom + ':' + r.start_position in snps:
 		r.residue = snp_to_aa[r.chrom + ':' + r.start_position]
 		tcga_residues.append(r)
@@ -54,6 +56,7 @@ if 'counts_aa' in os.listdir('./'):
 	counts_aa = json.load(open('counts_aa'))
 else:
 	counts_aa = rebuildanal_helper.make_counts_aa(tcga_residues)
+	json.dump(counts_aa, open('counts_aa'))
 
 
 #########################################################################################
