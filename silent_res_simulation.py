@@ -29,7 +29,7 @@ class Rows(object):
         for x in object.keys():
             setattr(self, x, object[x])
 
-tcga_silent = filter(lambda x: x.variant_classification == 'Silent')
+tcga_silent = filter(lambda x: x.variant_classification == 'Silent', m)
 genes = list(set(map(lambda x: x.hugo_symbol, tcga_silent)))
 
 
