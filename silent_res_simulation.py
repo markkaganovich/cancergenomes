@@ -50,7 +50,7 @@ if 'counts_aa_silent' in os.listdir('./'):
 	counts_aa= json.load(open('counts_aa_silent'))
 else:
 	counts_aa  = rebuildanal_helper.make_counts_aa(tcga_residues)
-	json.dump(counts_aa, open('counts_aa_silent'))
+	json.dump(counts_aa, open('counts_aa_silent', 'w'))
 
 
 
