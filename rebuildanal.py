@@ -36,9 +36,9 @@ class Rows(object):
 tcga_rows = map(lambda x: Rows(x), m)
 genes = list(set(map(lambda x: x.hugo_symbol, tcga_rows)))    
 
-tcga_nonsilent = map(lambda x: x.variant_classification != 'Silent', tcga_rows)
+tcga_nonsilent = filter(lambda x: x.variant_classification != 'Silent', tcga_rows)
 
-tcga_silent = map(lambda x: x.variant_classification == 'Silent', tcga_rows)
+tcga_silent = filter(lambda x: x.variant_classification == 'Silent', tcga_rows)
 
 if 'snp_to_aa' in os.listdir('./'):
 	snp_to_aa = json.load(open('snp_to_aa'))
