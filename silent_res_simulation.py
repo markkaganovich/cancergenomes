@@ -70,7 +70,7 @@ def sim(gene):
 	return mean_peak, std, metric
 
 
-logging.basicConfig(filename='simulations.log',level=logging.DEBUG)
+logging.basicConfig(filename='simulations_silent.log',level=logging.DEBUG)
 
 prtn_len = json.load(open('prtn_len'))
 
