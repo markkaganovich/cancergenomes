@@ -56,7 +56,7 @@ if 'counts_aa' in os.listdir('./'):
 	counts_aa = json.load(open('counts_aa'))
 else:
 	counts_aa = rebuildanal_helper.make_counts_aa(tcga_residues)
-	json.dump(counts_aa, open('counts_aa'))
+	json.dump(counts_aa, open('counts_aa', 'w'))
 
 
 #########################################################################################
@@ -201,4 +201,7 @@ for l in lines:
 
 ## per residue
 
-for r in tcga_residues:
+for gene in tcga_residues:
+	mean = sim_gene_results[gene]['mean']
+	std = sim_gene_results[gene]['std']
+	counts_aa[gene]
