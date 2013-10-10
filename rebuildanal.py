@@ -36,9 +36,9 @@ class Rows(object):
 tcga_rows = map(lambda x: Rows(x), m)
 genes = list(set(map(lambda x: x.hugo_symbol, tcga_rows)))    
 
-tcga_nonsilent = map(lambda x: x.variant_classification != 'Silent')
+tcga_nonsilent = map(lambda x: x.variant_classification != 'Silent', tcga_rows)
 
-tcga_silent = map(lambda x: x.variant_classification == 'Silent')
+tcga_silent = map(lambda x: x.variant_classification == 'Silent', tcga_rows)
 
 if 'snp_to_aa' in os.listdir('./'):
 	snp_to_aa = json.load(open('snp_to_aa'))
@@ -197,3 +197,8 @@ for l in lines:
 	sim_gene_results[g]['metric'] = float(tabs[4].strip('\n'))
 
 '''
+
+
+## per residue
+
+for r in tcga_residues:
