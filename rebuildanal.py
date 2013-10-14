@@ -231,5 +231,6 @@ def peak_chisq_genes(gene, tcga_residues, expected_freq):
 	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
 	return chisq
 
-for gene in genes:
-	peak_chisq_genes(gene)
+
+#for gene in genes:
+#	peak_chisq_genes(gene)
