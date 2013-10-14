@@ -224,13 +224,39 @@ q.join()
 # cancer-specific genes
 
 def peak_chisq_genes(gene, tcga_residues, expected_freq):
-	gene_rows = filter(lambda x: x.residue == gene, tcga_residues)
+	gene_rows = filter(lambda x: x.hugo_symbol == gene, tcga_residues)
+	if len(gene_rows) < 10:
+		return (-1, -1)
 	gene_cancers = Counter(map(lambda x: x.cancer_type, gene_rows))
 	distr = get_np_array(cancers, gene_cancers) 
-	print distr
 	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
 	return chisq
 
+logging.basicConfig(filename='cancer_specific_genes.log',level=logging.DEBUG)
 
-#for gene in genes:
-#	peak_chisq_genes(gene)
+def do_work(peak):
+	print "Worker running: %s" % gene
+	result = peak_chisq_genes(gene, tcga_residues, expected_freq)
+	logging.info('\t' + str(gene) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
+	return result
+	
+
+def worker():
+    while True:
+        peak = q.get()
+        do_work(gene)	
+        q.task_done()
+
+q = Queue.Queue()
+for i in range(14):
+     t = threading.Thread(target=worker)
+     t.daemon = True
+     t.start()
+
+for gene in genes:
+	print "Queuing %s" % gene
+	q.put(gene)
+
+
+q.join()
+
