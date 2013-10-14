@@ -144,6 +144,8 @@ map(lambda x: (x, cancer_types_counts[x]/float(sum(cancer_types_counts.values())
 map(lambda x: (x, cancer_types_silent_count[x]/float(sum(cancer_types_silent_count.values()))), cancer_types_silent_count.keys())
 
 cancers = cancer_types_counts.keys()
+
+'''
 total = float(sum(cpc.values()))
 distr = []
 for c in cancers:	
@@ -151,7 +153,9 @@ for c in cancers:
 		distr.append(cpc[c]/total)
 	else:
 		distr.append(0.0)
-	
+'''
+
+
 def get_np_array(cancers, cancer_counts):
 	distr = []
 	for c in cancers:	
@@ -178,20 +182,21 @@ def peak_chisq(peak, tcga_residues, expected_freq):
 	return chisq
 
 #distr_ls = []
+'''
 chisq = []
 for peak in pileupsorted:
 	peak_rows = filter(lambda x: x.residue == peak[0], tcga_residues)
 	peak_cancers = Counter(map(lambda x: x.cancer_type, peak_rows))
 	distr = get_np_array(cancers, peak_cancers) 
 	chisq.append(scipy.stats.chisquare(distr, expected_freq*sum(distr)))
-
+'''
 
 
 logging.basicConfig(filename='pile_up_chisq.log',level=logging.DEBUG)
 
 def do_work(peak):
 	print "Worker running: %s" % item
-	result = peak_chisq(peak)
+	result = peak_chisq(peak,tcga_residues,expected_freq)
 	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
 	return result
 	
