@@ -191,7 +191,7 @@ for peak in pileupsorted:
 	chisq.append(scipy.stats.chisquare(distr, expected_freq*sum(distr)))
 '''
 
-
+'''
 logging.basicConfig(filename='pile_up_chisq_silent.log',level=logging.DEBUG)
 
 def do_work(peak):
@@ -218,8 +218,18 @@ for peak in pileupsorted_silent:
 	q.put(peak)
 
 q.join()
+'''
 
+###############################################################################################
+# cancer-specific genes
 
+def peak_chisq_genes(gene, tcga_residues, expected_freq):
+	gene_rows = filter(lambda x: x.residue == gene, tcga_residues)
+	gene_cancers = Counter(map(lambda x: x.cancer_type, gene_rows))
+	distr = get_np_array(cancers, gene_cancers) 
+	print distr
+	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
+	return chisq
 
-
-
+for gene in genes:
+	peak_chisq_genes(gene)
