@@ -232,11 +232,11 @@ def peak_chisq_genes(gene, tcga_residues, expected_freq):
 	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
 	return chisq
 
-logging.basicConfig(filename='cancer_specific_genes.log',level=logging.DEBUG)
+logging.basicConfig(filename='cancer_specific_genes_silent.log',level=logging.DEBUG)
 
 def do_work(peak):
 	print "Worker running: %s" % gene
-	result = peak_chisq_genes(gene, tcga_residues, expected_freq)
+	result = peak_chisq_genes(gene, tcga_residues_silent, expected_freq_silent)
 	logging.info('\t' + str(gene) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
 	return result
 	
