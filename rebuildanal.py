@@ -132,6 +132,7 @@ pileupsorted = sorted(pile_ups.iteritems(), key=operator.itemgetter(1), reverse=
 counts_aa_silent = json.load(open('counts_aa_silent'))
 sim_gene_results_silent = sim_output('simulations_silent.log')
 pile_up_silent = pile_up(sim_gene_results_silent, silent_residues, counts_aa_silent) 
+pileupsorted_silent = sorted(pile_up_silent.iteritems(), key=operator.itemgetter(1), reverse = True)
 
 ##########################################################################
 # cancer type distribution
@@ -170,10 +171,9 @@ def get_np_array(cancers, cancer_counts):
 overall = get_np_array(cancers, cancer_types_counts)
 silent_distr = get_np_array(cancers, cancer_types_silent_count)
 
-scipy.stats.ks_2samp(overall, silent_distr)
-
 
 expected_freq = overall / sum(overall) 
+expected_freq_silent = silent_distr / sum(silent_distr)
 def peak_chisq(peak, tcga_residues, expected_freq):
 	peak_rows = filter(lambda x: x.residue == peak[0], tcga_residues)
 	peak_cancers = Counter(map(lambda x: x.cancer_type, peak_rows))
@@ -192,12 +192,12 @@ for peak in pileupsorted:
 '''
 
 
-logging.basicConfig(filename='pile_up_chisq.log',level=logging.DEBUG)
+logging.basicConfig(filename='pile_up_chisq_silent.log',level=logging.DEBUG)
 
 def do_work(peak):
-	print "Worker running: %s" % item
-	result = peak_chisq(peak,tcga_residues,expected_freq)
-	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
+	print "Worker running: %s" % peak[0]
+	result = peak_chisq(peak,tcga_residues_silent,expected_freq_silent)
+	logging.info('\t' + str(peak[0]) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
 	return result
 	
 
@@ -213,7 +213,7 @@ for i in range(14):
      t.daemon = True
      t.start()
 
-for peak in pileupsorted:
+for peak in pileupsorted_silent:
 	print "Queuing %s" % peak[0]
 	q.put(peak)
 
