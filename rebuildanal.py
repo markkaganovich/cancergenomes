@@ -176,6 +176,8 @@ expected_freq = overall / sum(overall)
 expected_freq_silent = silent_distr / sum(silent_distr)
 def peak_chisq(peak, tcga_residues, expected_freq):
 	peak_rows = filter(lambda x: x.residue == peak[0], tcga_residues)
+	if len(peak_rows) < 10:
+		return (-1,-1)
 	peak_cancers = Counter(map(lambda x: x.cancer_type, peak_rows))
 	distr = get_np_array(cancers, peak_cancers) 
 	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
@@ -191,12 +193,12 @@ for peak in pileupsorted:
 	chisq.append(scipy.stats.chisquare(distr, expected_freq*sum(distr)))
 '''
 
-'''
-logging.basicConfig(filename='pile_up_chisq_silent.log',level=logging.DEBUG)
+
+logging.basicConfig(filename='pile_up_chisq2.log',level=logging.DEBUG)
 
 def do_work(peak):
 	print "Worker running: %s" % peak[0]
-	result = peak_chisq(peak,tcga_residues_silent,expected_freq_silent)
+	result = peak_chisq(peak,tcga_residues,expected_freq)
 	logging.info('\t' + str(peak[0]) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
 	return result
 	
@@ -213,30 +215,30 @@ for i in range(14):
      t.daemon = True
      t.start()
 
-for peak in pileupsorted_silent:
+for peak in pileupsorted_silent[21293:]:
 	print "Queuing %s" % peak[0]
 	q.put(peak)
 
 q.join()
-'''
+
 
 ###############################################################################################
 # cancer-specific genes
-
+'''
 def peak_chisq_genes(gene, tcga_residues, expected_freq):
 	gene_rows = filter(lambda x: x.hugo_symbol == gene, tcga_residues)
-	if len(gene_rows) < 10:
+	if len(gene_rows) < 40:
 		return (-1, -1)
 	gene_cancers = Counter(map(lambda x: x.cancer_type, gene_rows))
 	distr = get_np_array(cancers, gene_cancers) 
 	chisq = scipy.stats.chisquare(distr, expected_freq*sum(distr))
 	return chisq
 
-logging.basicConfig(filename='cancer_specific_genes_silent.log',level=logging.DEBUG)
+logging.basicConfig(filename='cancer_specific_genes2.log',level=logging.DEBUG)
 
 def do_work(peak):
 	print "Worker running: %s" % gene
-	result = peak_chisq_genes(gene, tcga_residues_silent, expected_freq_silent)
+	result = peak_chisq_genes(gene, tcga_residues, expected_freq)
 	logging.info('\t' + str(gene) + ' \t ' + str(result[0]) + '\t' + str(result[1]))
 	return result
 	
@@ -259,4 +261,124 @@ for gene in genes:
 
 
 q.join()
+'''
+
+
+
+
+fig = plt.figure(frameon = False)
+ax = fig.add_subplot(111)
+line, = ax.plot(f1, color='red', lw=3)
+line, = ax.plot(f_residues, color='blue', lw=3)
+
+ax.set_xscale('log')
+#ax.set_yscale(range(0, ))
+plt.show()
+
+'''
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ind = list(range(0, 15))
+width = .2
+print "making bar"
+bar = ax.bar(ind, avg_muts, width, color="r")
+print "saving ..."
+plt.savefig('hack.png')
+'''
+
+
+cancers = list(set(map(lambda x: x.cancer_type, tcga_residues)))
+colors = ('AliceBlue', 'AntiqueWhite', 'Aqua', 'Aquamarine', 'blue', 'BlueViolet', 'brown', 'red', 'CadetBlue', 'Chartreuse', 'Coral', 'DarkBlue','CornflowerBlue', 'Crimson', 'DarkGoldenRod', 'gray' )
+colors2 = ('lightgray', 'lightgray', 'red', 'blue', 'lightgray', 'DarkGoldenRod', 'lightgray', 'lightgray', 'lightgray', 'lightgray', 'lightgray', 'lightgray', 'lightgray', 'lightgray', 'lightgray')
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+
+for i,c in enumerate(cancers):
+	print c
+	t = filter(lambda x: x.cancer_type == c, tcga_residues)
+	samples = map(lambda x: x.tumor_sample_barcode, t)
+	samples_ct = Counter(samples)
+	s = sorted(samples_ct.iteritems(), key = operator.itemgetter(1), reverse = True)
+	f = map(lambda x: float(len(filter(lambda y: y[1] > x, s)))/len(list(set(samples))), range(0, max(samples_ct.values())))
+	line = ax.plot(f, color=colors2[i], lw=2)
+
+ax.set_xscale('log')
+print "saving...."
+plt.savefig('freq_cancer_types.png')
+
+samples_silent = map(lambda x: x.tumor_sample_barcode, tcga_silent)
+samples_silent_ct = Counter(samples_silent)
+
+s_silent = sorted(samples_silent_ct.iteritems(), key=operator.itemgetter(1), reverse=True)
+
+f_silent = map(lambda x: len(filter(lambda y: y[1] > x, s_silent)), range(0, max(samples_ct.values())))
+json.dump(f_silent, open('slide1mutfreq_silent_oct', 'w'))
+
+
+
+
+from pylab import plot, show, savefig, xlim, figure, \
+                hold, ylim, legend, boxplot, setp, axes
+
+def setBoxColors(bp):
+    setp(bp['boxes'][0], color='blue')
+    setp(bp['caps'][0], color='blue')
+    setp(bp['caps'][1], color='blue')
+    setp(bp['whiskers'][0], color='blue')
+    setp(bp['whiskers'][1], color='blue')
+    setp(bp['fliers'][0], color='blue')
+    setp(bp['fliers'][1], color='blue')
+    setp(bp['medians'][0], color='blue')
+
+    setp(bp['boxes'][1], color='red')
+    setp(bp['caps'][2], color='red')
+    setp(bp['caps'][3], color='red')
+    setp(bp['whiskers'][2], color='red')
+    setp(bp['whiskers'][3], color='red')
+    setp(bp['fliers'][2], color='red')
+    setp(bp['fliers'][3], color='red')
+    setp(bp['medians'][1], color='red')
+
+fig = figure(frameon=False)
+
+#ax = axes()
+ax = fig.add_subplot(111)
+hold(True)
+
+# first boxplot pair
+bp = boxplot([map(lambda x: x[1], pileupsorted_silent), map(lambda x: x[1], pileupsorted)], positions = [1, 2], widths = 0.6)
+setBoxColors(bp)
+
+savefig('pileup_box.png', transparent=True)
+
+
+pileup_dic = dict(pileupsorted)
+k = set(pileup_dic.keys())
+
+chis = []
+zs = []
+for p in chiq.keys():
+	if p not in k:
+		print p
+	else:
+		chis.append(chiq[p]['chi'])
+		zs.append(pileup_dic[p])
+
+
+pileup_s_dic = dict(pileupsorted_silent)
+k_s = set(pileup_s_dic) 
+
+chis_s = []
+zs_s = []
+
+
+for p in pileup_chisq_silent.keys():
+	if p not in k_s:
+		print p
+	else:
+		chis_s.append(pileup_chisq_silent[p])
+		zs_s.append(pileup_s_dic[p])
+
+
 

@@ -7,7 +7,6 @@ import json
 import commands
 import os
 import csv 
-import headers
 import operator
 import matplotlib.pyplot as plt
 import numpy as np
@@ -41,6 +40,7 @@ for r in rows:
     except KeyError:
         print r.chrom +':' + r.start_position
         badrows.append(r)
+        
 badrows = set(badrows)
 
 rows = filter(lambda x: x not in badrows, rows)
@@ -121,11 +121,12 @@ def get_gene_sample(snp_sample, outputfile = 'gene_sample'):
     gene_sample = {}
     snps = snp_sample.keys()
     for s in snps:
-        gene = s.split(':')[1]
+        gene = s.split(':')[0]
         try:
             gene_sample[gene].extend(snp_sample[s])
         except KeyError:
             gene_sample[gene] = snp_sample[s]
+
     for k in gene_sample.keys():
         gene_sample[k] = list(set(gene_sample[k]))
     out = open(outputfile, 'w')

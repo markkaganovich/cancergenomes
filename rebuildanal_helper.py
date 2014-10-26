@@ -48,11 +48,12 @@ def make_counts_aa(rows):
 	for r in rows:
 		if r.hugo_symbol not in counts_aa.keys():
 			counts_aa[r.hugo_symbol] = {}
-		if r.residue in counts_aa[r.hugo_symbol].keys():
-			 counts_aa[r.hugo_symbol][r.residue] += 1
-		else:
-			counts_aa[r.hugo_symbol][r.residue] = 1
+		try:
+			if r.residue in counts_aa[r.hugo_symbol].keys():
+				counts_aa[r.hugo_symbol][r.residue] += 1
+			else:
+				counts_aa[r.hugo_symbol][r.residue] = 1
+		except AttributeError:
+			continue
 	return counts_aa
-
-
 
