@@ -1,5 +1,6 @@
 
 
+
 def get_table(chrom, pos):
 	pos = int(pos)
 	chrom = chrom.strip(' ')
@@ -10,7 +11,10 @@ def get_table(chrom, pos):
 	if tables is None:
 		return None
 	table_ranges = map(lambda x: (int(x.split('_')[1]), int(x.split('_')[2])), tables)
-	select_range = filter(lambda x: pos >= x[0] and pos <= x[1], table_ranges)[0]
+	range_list = filter(lambda x: pos >= x[0] and pos <= x[1], table_ranges)
+	if range_list == []:
+		return None
+	select_range = range_list[0]
 	select_table = 'chr' + chrom + '_' + str(select_range[0])+ '_' + str(select_range[1])
 	table = cursor.execute("select COORD2, AAPOS2 from " + select_table + " where SNP = 'Reference'").fetchall()
 	table_dic = {}
@@ -34,8 +38,11 @@ def get_snp_to_aa(rows):
 			chrom = str(r.chrom).strip(' ')
 			pos = int(r.start_position)
 			if not (pos > current_range[0] and pos < current_range[1]):
-				[current_range, current_table, positions] = get_table(chrom, pos)
-				print "changing tables"
+				try:
+					[current_range, current_table, positions] = get_table(chrom, pos)
+					print "changing tables"
+				except TypeError:
+					continue
 			if pos in positions:
 				aa = current_table[pos]
 				snp_to_aa[chrom +':' + str(pos)] = r.hugo_symbol + ':' + str(aa)
