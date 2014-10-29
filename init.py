@@ -30,7 +30,9 @@ class Rows(object):
             setattr(self, x, object[x])
 
 tcga_rows = map(lambda x: Rows(x), residues_dicts)
-counts_aa = json.load('counts_aa.json')
+counts_aa = json.load(open('counts_aa.json'))
+
+
 
 
 
