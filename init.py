@@ -15,22 +15,22 @@ import os
 # amino acid residue (gene:pos)
 ###
 #mutations = json.load(open('mutations.json'))
-residues = json.load(open('residues.json')) #non-syn mutations
+residues = json.load(open('residues.json')) 
 
 ### dictionary format
-residues_dicts = []
-for v in residues:
-    residues_dicts.append({'chrom': v[0], 'start_position' : v[1], 'rsid' :
-v[2], 'ref': v[3], 'alt' : v[4], 'hugo_symbol': v[5], 'variant_classification' :
-v[6], 'residue': v[7]}, 'cancer_type': v[8])
+file = open('tcga_residues_dictionary')
+tcga_residues = json.load(file)
+file.close()
 
 class Rows(object):
     def __init__(self,object):
         for x in object.keys():
             setattr(self, x, object[x])
 
-tcga_rows = map(lambda x: Rows(x), residues_dicts)
+tcga_rows = map(lambda x: Rows(x), tcga_residues)
 counts_aa = json.load(open('counts_aa.json'))
+
+
 
 
 
