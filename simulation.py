@@ -54,7 +54,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
     	t.daemon = True
     	t.start()
 
-    for gene in genes:
+	for gene in genes:
 		if gene in counts.keys() and sum(counts[gene].values()) > 4 and gene in length.keys():
 			print "Queuing %s" % gene
 			q.put(gene)
