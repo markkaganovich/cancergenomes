@@ -50,7 +50,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
 
 	q = Queue.Queue()
 	for i in range(10):
-    	t = threading.Thread(target=worker)
+		t = threading.Thread(target=worker)
     	t.daemon = True
     	t.start()
 
