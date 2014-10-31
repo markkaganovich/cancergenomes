@@ -10,7 +10,7 @@ import json
 import commands
 import os
 import operator
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
 import rebuildanal_helper
@@ -41,16 +41,17 @@ tcga_nonsilent = filter(lambda x: x.variant_classification != 'Silent', tcga_row
 
 tcga_silent = filter(lambda x: x.variant_classification == 'Silent', tcga_rows)
 
-if 'snp_to_aa' in os.listdir('./'):
-	snp_to_aa = json.load(open('snp_to_aa'))
-else:	
-	snp_to_aa = rebuildanal_helper.get_snp_to_aa(tcga_rows)
 
-snps = set(snp_to_aa.keys())
+if 'snp_2aa' in os.listdir('./'):
+	snp2aa = json.load(open('snp2aa.json'))
+else:	
+	snp2aa = rebuildanal_helper.get_snp_to_aa(tcga_rows)	
+
+snps = set(snp2aa.keys())
 tcga_residues = []
 for r in tcga_nonsilent:
 	if r.chrom + ':' + r.start_position in snps:
-		r.residue = snp_to_aa[r.chrom + ':' + r.start_position]
+		r.residue = snp2aa[r.chrom + ':' + r.start_position]
 		tcga_residues.append(r)
 
 if 'counts_aa' in os.listdir('./'):

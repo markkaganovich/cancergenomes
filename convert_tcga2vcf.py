@@ -75,11 +75,7 @@ print_vcf(variants_json, 'tcga.vcf')
 #
 
 
-
-
 residues = json.load(open('residues.json'))
-
-
 
 ### dictionary format
 residues_dicts = []

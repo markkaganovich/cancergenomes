@@ -1,4 +1,8 @@
-
+import os
+import matplotlib.pyplot as plt
+import simplejson as json
+import operator
+from collections import Counter
 
 
 def get_table(chrom, pos):
@@ -63,4 +67,63 @@ def make_counts_aa(rows):
 		except AttributeError:
 			continue
 	return counts_aa
+
+
+def query_position(chrom_pos, rows):
+	input_chrom = chrom_pos.split(':')[0]
+	input_pos = chrom_pos.split(':')[1]
+	return filter(lambda x: x.chrom == input_chrom and str(x.start_position) == input_pos, rows)
+
+
+def select(key, value, dataset):
+	return filter(lambda x : getattr(x, key) == value, dataset)
+
+
+def gene_bps(gene, dataset):
+	gene_rows = select('hugo_symbol', gene, dataset)
+	bps = map(lambda x: x.start_position, gene_rows)
+	return bps
+
+def scp(remotefile, remotehost = "mkagan@scg3", localfile = None):
+	print remotefile, localfile, remotehost
+	remotefile_path = "~/mark/cancergenomes/"
+	if not localfile:
+		localfile = remotefile
+	os.system('scp  "%s:%s" "%s"' % (remotehost, remotefile_path + remotefile, localfile))
+
+
+def plot_file(json_file, show_or_save = 'save', input_path = './', output_path = './'):
+	fig1 = plt.figure(facecolor=".75")
+	ax1 = plt.axes(frameon=False)
+	ax1.get_xaxis().tick_bottom()   # Turn off ticks at top of plot
+
+	#ax1.axes.get_xaxis().set_visible(False)
+	#ax1.axes.get_yaxis().set_visible(False)     # Hide y axis
+
+	# Add a plot
+	file = open(input_path + json_file)
+	data = json.load(file)
+	sorted_data = sorted(data.iteritems(), key = operator.itemgetter(0))
+	genome_x = map(lambda x: int(x[0]), sorted_data)
+	gene_x = map(lambda x: x - min(genome_x), genome_x)
+	y = map(lambda x: x[1], sorted_data)
+	ax1.plot(gene_x, y, 'bo', alpha=.7, clip_on = False)
+
+	#plt.legend(loc='lower right')
+
+	# Draw the x axis line
+	# Note that this must be done after plotting, to get the correct
+	# view interval
+	xmin, xmax = ax1.get_xaxis().get_view_interval()
+	ymin, ymax = ax1.get_yaxis().get_view_interval()
+	ax1.add_artist(plt.Line2D((xmin, xmax), (ymin, ymin), color='black', linewidth=2))
+
+	if show_or_save == 'save':
+		plt.savefig(output_path + json_file + '.png', transparent = True)
+	if show_or_save == 'show':
+		plt.show()
+
+
+
+
 
