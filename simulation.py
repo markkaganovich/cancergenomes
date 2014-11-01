@@ -1,4 +1,7 @@
 import json
+import threading
+import logging
+import Queue
 
 def sim(gene, counts, length):
 	peaks_max = []
