@@ -40,6 +40,22 @@ def worker():
 
 
 def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filename = 'simulation14.log'):
+	
+	def do_work(item):
+		print "Worker running: %s" % item
+		result = sim(item)
+		#peak_stds[item] = result
+		logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
+		return result
+	
+
+	def worker():
+    	while True:
+    		item = q.get()
+      	  	do_work(item)	
+       		q.task_done()
+
+
 	logging.basicConfig(filename=filename,level=logging.DEBUG)
 
 	counts = json.load(open(counts_file))
