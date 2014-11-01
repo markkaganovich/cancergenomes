@@ -22,7 +22,7 @@ def sim(gene, counts, length):
 
 
 
-def do_work(itemm, counts, length):
+def do_work(item, counts, length):
 	print "Worker running: %s" % item
 	result = sim(item, counts, length)
 	#peak_stds[item] = result
