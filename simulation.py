@@ -22,9 +22,9 @@ def sim(gene, counts, length):
 
 
 
-def do_work(item):
+def do_work(itemm, counts, length):
 	print "Worker running: %s" % item
-	result = sim(item)
+	result = sim(item, counts, length)
 	#peak_stds[item] = result
 	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
 	return result
@@ -36,7 +36,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
 		while True:
 			print "working..."
 			item = q.get()
-			do_work(item)	
+			do_work(item, counts, length)	
 			q.task_done()
 
 	logging.basicConfig(filename=filename,level=logging.DEBUG)
@@ -59,7 +59,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
 	for gene in genes[0:10]:
 		if gene in counts.keys() and sum(counts[gene].values()) > 4 and gene in length.keys():
 			print "Queuing %s" % gene
-			q.put(gene)
+			q.put(gene, counts, length)
 
 	q.join()
 
