@@ -4,7 +4,7 @@ import logging
 import Queue
 import random
 
-def sim(gene, counts, length):
+def simulate(gene, counts, length):
 	peaks_max = []
 	sim = 0
 	while sim < 1E4:
@@ -13,8 +13,8 @@ def sim(gene, counts, length):
 		for p in range(0, gene_muts):
 			pos.append(random.randint(0, length[gene]))
 		sim +=1
-		counts = Counter(pos)
-		peaks_max.append(max(counts.values()))	
+		counts_pos = Counter(pos)
+		peaks_max.append(max(counts_pos.values()))	
 	std = numpy.std(peaks_max)
 	mean_peak = numpy.mean(peaks_max)
 	metric = (numpy.max(counts[gene].values()) - mean_peak) / std
@@ -25,7 +25,7 @@ def sim(gene, counts, length):
 
 def do_work(item, counts, length):
 	print "Worker running: %s" % item
-	result = sim(item, counts, length)
+	result = simulate(item, counts, length)
 	#peak_stds[item] = result
 	logging.info('\t' + str(item) + ' \t ' + str(result[0]) + '\t' + str(result[1]) + '\t' + str(result[2]))
 	return result
