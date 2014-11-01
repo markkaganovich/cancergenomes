@@ -30,18 +30,15 @@ def do_work(item):
 	return result
 	
 
-def worker():
-    while True:
-    	print "here"
-        item = q.get()
-        do_work(item)	
-        q.task_done()
-
-
-
-
 def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filename = 'simulation14.log'):
 	
+	def worker():
+		while True:
+			print "working..."
+			item = q.get()
+			do_work(item)	
+			q.task_done()
+
 	logging.basicConfig(filename=filename,level=logging.DEBUG)
 
 	counts = json.load(open(counts_file))
