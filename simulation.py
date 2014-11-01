@@ -3,6 +3,7 @@ import threading
 import logging
 import Queue
 import random
+import numpy
 
 def simulate(gene, counts, length):
 	peaks_max = []
