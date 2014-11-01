@@ -2,6 +2,7 @@ import json
 import threading
 import logging
 import Queue
+import random
 
 def sim(gene, counts, length):
 	peaks_max = []
@@ -51,7 +52,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
 				length[g] = length[g] * 3
 
 	q = Queue.Queue()
-	for i in range(10):
+	for i in range(2):
 		t = threading.Thread(target=worker)
     	t.daemon = True
     	t.start()
