@@ -32,7 +32,7 @@ def do_work(item, counts, length):
 	return result
 	
 
-def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filename = 'simulation14.log'):
+def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filename = 'simulation14.log', genes_file = 'genes.json'):
 	
 	def worker():
 		while True:
@@ -45,7 +45,7 @@ def run_simulation(dna_element = 'prtn', counts_file = 'counts_aa.json', filenam
 
 	counts = json.load(open(counts_file))
 	length = json.load(open('prtn_len'))
-	genes = json.load(open('genes.json'))
+	genes = json.load(open(genes_file))
 
 	if dna_element == 'dna':
 		for g in genes:
