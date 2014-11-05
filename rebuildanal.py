@@ -10,7 +10,7 @@ import json
 import commands
 import os
 import operator
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
 from pysqlite2 import dbapi2 as sqlite
 import rebuildanal_helper
@@ -116,13 +116,44 @@ def pile_up(sim_gene_results, residues, counts_aa):
 			std = sim_gene_results[gene]['std']
 		except KeyError:
 			continue
-		if res not in counts_aa[gene].keys():
-			what.append(res)
-		else:
-			val = counts_aa[gene][res]
-			pile_ups[res] = (val-mean)/std
+		try:
+			if res not in counts_aa[gene].keys():
+				what.append(res)
+			else:
+				val = counts_aa[gene][res]
+				pile_ups[res] = (val-mean)/std
+		except:
+			continue
 
 	return pile_ups
+
+
+
+## HACK. pile_up exception for BP case (the keys of counts_bp are not gene:position, but rather just position)
+def pile_up(sim_gene_results, residues, counts_aa):
+	pile_ups = {}
+	what = []
+	for res in residues:
+		gene = res.split(':')[0]
+		chrom = res.split(':')[1]
+		start_position = str(res.split(':')[2])
+		chrom_pos = chrom + ':' + start_position
+		try:
+			mean = sim_gene_results[gene]['mean']
+			std = sim_gene_results[gene]['std']
+		except KeyError:
+			continue
+		try:
+			if start_position not in counts_aa[gene].keys():
+				what.append(chrom_pos)
+			else:
+				val = counts_aa[gene][start_position]
+				pile_ups[chrom_pos] = (val-mean)/std
+		except:
+			continue
+
+	return pile_ups
+
 
 
 sim_gene_results = sim_output('simulations.log')
