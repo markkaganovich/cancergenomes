@@ -5,6 +5,77 @@ import operator
 from collections import Counter
 
 
+def sim_output(simulation_file = 'simulations.log'):
+
+	sim_gene_results = {}
+	lines = open(simulation_file).readlines()
+	simgenes = map(lambda x: x.split('\t')[1].strip('  '), lines)
+	for gene in simgenes:
+		sim_gene_results[gene] = {}
+
+	for l in lines:
+		tabs = l.split('\t')
+		g = tabs[1].strip('  ')
+		sim_gene_results[g]= {}
+		sim_gene_results[g]['mean'] = float(tabs[2])
+		sim_gene_results[g]['std'] = float(tabs[3])
+		sim_gene_results[g]['metric'] = float(tabs[4].strip('\n'))
+
+	return sim_gene_results
+
+## per residue
+
+def pile_up(sim_gene_results, residues, counts_aa):
+	pile_ups = {}
+	what = []
+	for res in residues:
+		gene = res.split(':')[0]
+		try:
+			mean = sim_gene_results[gene]['mean']
+			std = sim_gene_results[gene]['std']
+		except KeyError:
+			continue
+		try:
+			if res not in counts_aa[gene].keys():
+				what.append(res)
+			else:
+				val = counts_aa[gene][res]
+				pile_ups[res] = (val-mean)/std
+		except:
+			continue
+
+	return pile_ups
+
+
+
+## HACK. pile_up exception for BP case (the keys of counts_bp are not gene:position, but rather just position)
+def pile_up_bp(sim_gene_results, residues, counts_aa):
+	pile_ups = {}
+	what = []
+	for res in residues:
+		gene = res.split(':')[0]
+		chrom = res.split(':')[1]
+		start_position = str(res.split(':')[2])
+		chrom_pos = chrom + ':' + start_position
+		try:
+			mean = sim_gene_results[gene]['mean']
+			std = sim_gene_results[gene]['std']
+		except KeyError:
+			continue
+		try:
+			if start_position not in counts_aa[gene].keys():
+				what.append(chrom_pos)
+			else:
+				val = counts_aa[gene][start_position]
+				pile_ups[chrom_pos] = (val-mean)/std
+		except:
+			continue
+
+	return pile_ups
+
+
+
+
 def get_table(chrom, pos):
 	pos = int(pos)
 	chrom = chrom.strip(' ')
