@@ -239,4 +239,14 @@ def pile_up(sim_gene_results, residues, counts_aa):
 	return pile_ups
 
 
+def get_np_array(cancers, cancer_counts):
+	distr = []
+	for c in cancers:	
+		if c in cancer_counts.keys():
+			distr.append(float(cancer_counts[c]))
+		else:
+			distr.append(0.0)
+	distr = np.array(distr)
+	#distr = distr/sum(distr)
+	return distr
 
