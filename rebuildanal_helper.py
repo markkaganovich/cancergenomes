@@ -194,7 +194,45 @@ def plot_file(json_file, show_or_save = 'save', input_path = './', output_path =
 	if show_or_save == 'show':
 		plt.show()
 
+def sim_output(simulation_file = 'simulations.log'):
 
+	sim_gene_results = {}
+	lines = open(simulation_file).readlines()
+	simgenes = map(lambda x: x.split('\t')[1].strip('  '), lines)
+	for gene in simgenes:
+		sim_gene_results[gene] = {}
+
+	for l in lines:
+		tabs = l.split('\t')
+		g = tabs[1].strip('  ')
+		sim_gene_results[g]= {}
+		sim_gene_results[g]['mean'] = float(tabs[2])
+		sim_gene_results[g]['std'] = float(tabs[3])
+		sim_gene_results[g]['metric'] = float(tabs[4].strip('\n'))
+
+	return sim_gene_results
+
+def pile_up(sim_gene_results, residues, counts_aa):
+	pile_ups = {}
+	what = []
+	for res in residues:
+		gene = res.split(':')[0]
+		try:
+			mean = sim_gene_results[gene]['mean']
+			std = sim_gene_results[gene]['std']
+			n = len(counts_aa[gene])
+		except KeyError:
+			continue
+		try:
+			if res not in counts_aa[gene].keys():
+				what.append(res)
+			else:
+				val = counts_aa[gene][res]
+				pile_ups[res] = (val-mean)/(std * np.sqrt(n))
+		except:
+			continue
+
+	return pile_ups
 
 
 
