@@ -6,6 +6,7 @@ from collections import Counter
 import plotly.plotly as py
 from plotly.graph_objs import *
 py.sign_in("mark.kaganovich", "62d1k8xa77")
+import numpy as np
 
 
 def sim_output(simulation_file = 'simulations.log'):
