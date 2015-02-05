@@ -19,6 +19,7 @@ bps = map(lambda x: x.chrom + ':' + str(x.start_position), tcga_rows)
 gene = 'BRAF'
 braf = gene_bps('BRAF', tcga_rows)
 
+'''
 oncogenes = json.load(open('oncogenes'))
 for g in oncogenes:
 	bps = gene_bps(g, tcga_rows)
@@ -38,7 +39,7 @@ for g in oncogenes:
 	except:
 		continue
 	
-
+'''
 
 def select(key, value, dataset):
 	return filter(lambda x : getattr(x, key) == value, dataset)
