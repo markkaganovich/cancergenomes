@@ -4,6 +4,8 @@ import logging
 import Queue
 import random
 import numpy
+from collections import Counter
+
 
 def simulate(gene, counts, length):
 	peaks_max = []
@@ -19,7 +21,7 @@ def simulate(gene, counts, length):
 	std = numpy.std(peaks_max)
 	mean_peak = numpy.mean(peaks_max)
 	metric = (numpy.max(counts[gene].values()) - mean_peak) / std
-	return mean_peak, std, metric
+	return mean_peak, std, metric, peaks_max
 
 
 
