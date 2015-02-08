@@ -7,8 +7,7 @@ import logging
 import simplejson as json
 import os
 import bisect
-
-from solvebio import *
+import solvebio
 
 solvebio.login()
 
@@ -35,7 +34,8 @@ tcga_rows = map(lambda x: Rows(x), tcga_residues)
 counts_aa = json.load(open('counts_aa.json'))
 
 
-
+residues_7 = json.load(open('tcga_residues_7.json'))
+residues_only = map(lambda x: x['residue'], residues_7)
 
 
 
