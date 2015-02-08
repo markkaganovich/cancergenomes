@@ -8,6 +8,16 @@ from plotly.graph_objs import *
 py.sign_in("mark.kaganovich", "62d1k8xa77")
 import numpy as np
 
+from sqlalchemy.orm import backref, mapper, relation, sessionmaker
+from sqlalchemy import create_engine, Column, String, Integer, MetaData, Table
+from pysqlite2 import dbapi2 as sqlite
+import rebuildanal_helper
+
+
+import Queue
+import logging
+import bisect
+
 
 def sim_output(simulation_file = 'simulations.log'):
 
@@ -237,6 +247,28 @@ def pile_up(sim_gene_results, residues, counts_aa):
 			continue
 
 	return pile_ups
+
+
+def pile_up2(sim_gene_results, residues, counts_aa):
+	pile_ups = {}
+	for res in residues:
+		gene = res.split(':')[0]
+		try:
+			distr = sim_gene_results[gene]
+		except KeyError:
+			continue
+		try:
+			if in counts_aa[gene].keys():
+				val = counts_aa[gene][res]
+				pile_ups[res] = bisect.bisect_left(distr, val)
+
+		except:
+			continue
+
+	return pile_ups
+
+
+
 
 
 def get_np_array(cancers, cancer_counts):

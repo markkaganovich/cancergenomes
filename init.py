@@ -6,7 +6,11 @@ import Queue
 import logging
 import simplejson as json
 import os
+import bisect
 
+from solvebio import *
+
+solvebio.login()
 
 ###
 # do it from json files

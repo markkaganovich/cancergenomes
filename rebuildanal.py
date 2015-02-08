@@ -114,6 +114,8 @@ def pile_up(sim_gene_results, residues, counts_aa):
 		try:
 			mean = sim_gene_results[gene]['mean']
 			std = sim_gene_results[gene]['std']
+			#n = len(counts_aa[gene])
+			n = sum(counts_aa[gene].values())
 		except KeyError:
 			continue
 		try:
@@ -121,7 +123,7 @@ def pile_up(sim_gene_results, residues, counts_aa):
 				what.append(res)
 			else:
 				val = counts_aa[gene][res]
-				pile_ups[res] = (val-mean)/std
+				pile_ups[res] = (val-mean)/(std * np.sqrt(n))
 		except:
 			continue
 
@@ -130,7 +132,7 @@ def pile_up(sim_gene_results, residues, counts_aa):
 
 
 ## HACK. pile_up exception for BP case (the keys of counts_bp are not gene:position, but rather just position)
-def pile_up(sim_gene_results, residues, counts_aa):
+def pile_up_bp(sim_gene_results, residues, counts_aa):
 	pile_ups = {}
 	what = []
 	for res in residues:

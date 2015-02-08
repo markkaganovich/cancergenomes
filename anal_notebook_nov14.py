@@ -1,4 +1,11 @@
 import operator
+import threading
+import logging
+import Queue
+import random
+import numpy
+import json
+from collections import Counter
 
 execfile('init.py')
 from rebuildanal_helper import *
@@ -112,13 +119,20 @@ file.close()
 
 bps = map(lambda x: x.hugo_symbol + ':' +x.chrom + ':' + str(x.start_position), tcga_rows)
 counts_bp = json.load(open('counts_bp'))
+
+
+
+# old sim - peak results
+'''
 sim_gene_results = sim_output('simulations_bp_total.log')
 pile_ups = pile_up_bp(sim_gene_results, bps, counts_bp)
 pileupsorted = sorted(pile_ups.iteritems(), key=operator.itemgetter(1), reverse=True)
 
+'''
 aa2snp = json.load(open('aa2snp.json'))
 snp2aa = json.load(open('snp2aa.json'))
 
+'''
 # get top pileups for bps. scatterplot the top 1000
 bp_pairs = {}
 ba = []
@@ -134,17 +148,19 @@ for p in pileupsorted[0:1000]:
 		peaks.append((p[1], other_peak))
 	else:
 		continue
+'''
 
 tcga_rows_nonsyn = filter(lambda x: x.variant_classification != 'Silent', tcga_rows)
 residues = map(lambda s: s.residue, tcga_rows_nonsyn)
-#counts_aa = json.load(open('counts_aa'))
-sim_gene_results = sim_output('simulations_aa.log')
+counts_aa = json.load(open('counts_aa'))
+#sim_gene_results = sim_output('simulations_aa.log')
 #pile_ups = pile_up(sim_gene_results, residues, counts_aa)
 #pileupsorted = sorted(pile_ups.iteritems(), key=operator.itemgetter(1), reverse=True)
 
 counts_nonsyn  = json.load(open('counts_non_syn.json'))
-pileups = pile_up(sim_gene_results, residues, counts_nonsyn)
+#pileups = pile_up(sim_gene_results, residues, counts_nonsyn)
 
+'''
 
 ## nonsyn (7:37)
 tcga_rows_nonsyn = filter(lambda x: x.variant_classification != 'Silent', tcga_rows)
@@ -160,7 +176,7 @@ counts_silent  = json.load(open('counts_silent.json'))
 residues = map(lambda s: s.residue, tcga_rows_silent)
 pileups_silent = pile_up(sim_gene_results, residues, counts_silent)
 
-
+'''
 
 
 
@@ -178,6 +194,9 @@ def plot_sim(gene, rows, pileups, counts):
 			v.append(counts[gene][gene +':'+str(i)])
 
 	return x_range, v, t
+
+
+'''
 
 trace = Scatter(x = x_range, y = v)
 data = Data([trace])
@@ -205,6 +224,111 @@ for i in range(0,len(x_nonsyn)):
         y_nonsyn.append(c[x_nonsyn[i]])
 
 tcga_rows_nonsyn = filter(lambda x: x.variant_classification != 'Silent', tcga_rows)
+
+'''
+
+# run new simulation
+
+
+
+
+'''
+def simulate(gene, counts, length):
+	peaks_max = []
+	sim = 0
+	while sim < 1E4:
+		gene_muts = sum(counts[gene].values())
+		pos = []
+		for p in range(0, gene_muts):
+			pos.append(random.randint(0, length[gene]))
+		sim +=1
+		counts_pos = Counter(pos)
+		peaks_max.append(max(counts_pos.values()))	
+	std = numpy.std(peaks_max)
+	mean_peak = numpy.mean(peaks_max)
+	metric = (numpy.max(counts[gene].values()) - mean_peak) / std
+	return mean_peak, std, metric, peaks_max
+'''
+genes_file = 'genes.json'
+counts_file = 'counts_non_syn.json'
+
+#counts_file = 'counts_silent.json'
+
+
+execfile('simulation.py')
+
+'''
+outputfile = open('sim_results_prtn_non_syn_6.json', 'w')
+for i, gene in enumerate(genes):
+	if gene in counts.keys() and sum(counts[gene].values()) > 4 and gene in length.keys():
+		print "Queuing %s" % gene
+		r = simulate(gene, counts, length)
+		outputfile.write(str(i)+':'+' ')
+		json.dump(r, outputfile)
+		outputfile.write('\n')
+
+outputfile.close()
+'''
+
+
+def run_simulation_6(outputfile, counts_file, genes_file):
+	counts = json.load(open(counts_file))
+	length = json.load(open('prtn_len'))  # multiply by 3 if DNA
+	genes = json.load(open(genes_file)) 
+
+
+	out = open(outputfile, 'w')
+	for i, gene in enumerate(genes):
+		if gene in counts.keys() and sum(counts[gene].values()) > 4 and gene in length.keys():
+			print "Queuing %s" % gene
+			r = simulate(gene, counts, length)
+			out.write(str(i)+':'+' ')
+			json.dump(r, out)
+			out.write('\n')
+
+	out.close()
+
+genes_file = 'genes.json'
+counts_file = 'counts_non_syn.json'
+
+#counts_file = 'counts_silent.json'
+
+
+run_simulation_6('sim_results_prtn_silent_6', 'counts_silent.json', 'genes.json')
+run_simulation_6('sim_results_prtn_non_syn_6b', 'counts_non_syn.json', 'genes.json')
+
+
+# analyze sim output file
+outputfile = open('sim_results_prtn_silent_5.json')
+
+sim_gene_results = {}
+for line in outputfile.readlines():
+	t = line.split(':')
+	g = int(t[0])
+	j = json.loads(t[1])
+	sim_gene_results[genes[g]] = j[3]
+
+
+
+sim_genes_file = open('sim_results_prtn_non_syn.json')
+sim_gene_results = json.load(sim_genes_file)
+pileups = pile_up2(sim_gene_results, residues, counts_aa)
+
+
+
+### multiple mutations in one codon
+tcga_residues = json.load(open('tcga_residues_7.json'))
+samples = list(set(map(lambda x: x['tumor_sample_barcode'], tcga_residues)))
+
+mult = {}
+for s in samples:
+	sample_rows = filter(lambda x: x['tumor_sample_barcode'] == s, tcga_residues)
+	s_residues = map(lambda x: x['residue'], sample_rows)
+	c = Counter(s_residues)
+	mult_res = [(k,v) for k in c if c[k] > 1]
+	mult[s] = len(mult_res)
+
+
 
 
 
