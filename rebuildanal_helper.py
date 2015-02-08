@@ -254,13 +254,13 @@ def pile_up2(sim_gene_results, residues, counts_aa):
 	for res in residues:
 		gene = res.split(':')[0]
 		try:
-			distr = sim_gene_results[gene]
+			distr = sorted(sim_gene_results[gene])
 		except KeyError:
 			continue
 		try:
-			if in counts_aa[gene].keys():
+			if res in counts_aa[gene].keys():
 				val = counts_aa[gene][res]
-				pile_ups[res] = bisect.bisect_left(distr, val)
+				pile_ups[res] = bisect.bisect_left(distr, val)/double(10000)
 
 		except:
 			continue
