@@ -299,7 +299,8 @@ run_simulation_6('sim_results_prtn_non_syn_6b', 'counts_non_syn.json', 'genes.js
 
 
 # analyze sim output file
-outputfile = open('sim_results_prtn_silent_5.json')
+genes = json.load(open('genes.json'))
+outputfile = open('sim_results_prtn_non_syn_working')
 
 sim_gene_results = {}
 for line in outputfile.readlines():
@@ -309,10 +310,15 @@ for line in outputfile.readlines():
 	sim_gene_results[genes[g]] = j[3]
 
 
-
-sim_genes_file = open('sim_results_prtn_non_syn.json')
+sim_genes_file = open('sim_distr_prtn_non_syn.json')
 sim_gene_results = json.load(sim_genes_file)
-pileups = pile_up2(sim_gene_results, residues, counts_aa)
+pileups = pile_up2(sim_gene_results, residues_only, counts_aa)
+
+
+## Silent
+tcga_rows_silent = filter(lambda x: x.variant_classification == 'Silent', tcga_rows)
+counts_silent = json.load(open('counts_silent.json'))
+sim_genes_file = open('sim_distr_prtn_silent.json')
 
 
 
@@ -325,7 +331,7 @@ for s in samples:
 	sample_rows = filter(lambda x: x['tumor_sample_barcode'] == s, tcga_residues)
 	s_residues = map(lambda x: x['residue'], sample_rows)
 	c = Counter(s_residues)
-	mult_res = [(k,v) for k in c if c[k] > 1]
+	mult_res = [(k,c[k]) for k in c if c[k] > 1]
 	mult[s] = len(mult_res)
 
 
